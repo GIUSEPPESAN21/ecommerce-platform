@@ -80,6 +80,44 @@ def get_gemini_api_key() -> Optional[str]:
         st.error(f"Error loading Gemini API key: {str(e)}")
         return None
 
+def get_firebase_api_key() -> Optional[str]:
+    """
+    Get Firebase Web API Key from Streamlit secrets.
+    This is needed for Firebase Auth REST API.
+    """
+    try:
+        # Try direct format
+        if 'firebase_api_key' in st.secrets:
+            return st.secrets['firebase_api_key']
+        
+        # Try nested format
+        if 'firebase' in st.secrets and 'api_key' in st.secrets['firebase']:
+            return st.secrets['firebase']['api_key']
+        
+        # Try in firebase_credentials
+        if 'firebase_credentials' in st.secrets:
+            creds = st.secrets['firebase_credentials']
+            if 'api_key' in creds:
+                return creds['api_key']
+            if 'web_api_key' in creds:
+                return creds['web_api_key']
+        
+        return None
+    except Exception as e:
+        return None
+
+
+def get_firebase_project_id() -> Optional[str]:
+    """Get Firebase project ID from credentials."""
+    try:
+        cred_dict = get_firebase_credentials()
+        if cred_dict and 'project_id' in cred_dict:
+            return cred_dict['project_id']
+        return None
+    except Exception:
+        return None
+
+
 def get_app_config() -> Dict[str, Any]:
     return {
         'app_name': 'E-Commerce Platform',
