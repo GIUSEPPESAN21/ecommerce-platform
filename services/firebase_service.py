@@ -154,20 +154,24 @@ class FirebaseService:
             st.error(f"Error creating product: {str(e)}")
             return None
     
-    def get_products(self, limit: int = 12, category: Optional[str] = None, 
-                     search_query: Optional[str] = None) -> List[Dict[str, Any]]:
-        """Get products from Firestore with optional filtering."""
+    def _fetch_products_from_db(self, category: Optional[str] = None, max_fetch: int = 100) -> List[Dict[str, Any]]:
+        """
+        Internal method to fetch products from Firestore.
+        This is the actual database query that gets cached.
+        """
         try:
             db = self.get_db()
             if db is None:
                 return []
             
+            # Build base query
             query = db.collection('products').where('active', '==', True)
             
+            # Apply category filter if provided
             if category:
                 query = query.where('category', '==', category)
             
-            docs = query.limit(limit).stream()
+            docs = query.limit(max_fetch).stream()
             
             products = []
             for doc in docs:
@@ -175,6 +179,35 @@ class FirebaseService:
                 product['id'] = doc.id
                 products.append(product)
             
+            return products
+        except Exception as e:
+            st.error(f"Error fetching products: {str(e)}")
+            return []
+    
+    def get_products(self, limit: int = 12, category: Optional[str] = None, 
+                     search_query: Optional[str] = None) -> List[Dict[str, Any]]:
+        """
+        Get products from Firestore with optional filtering.
+        Results are cached for 10 minutes to reduce Firebase costs.
+        
+        Args:
+            limit: Maximum number of products to return (applied AFTER search filter)
+            category: Optional category filter
+            search_query: Optional search query for product name/description
+            
+        Returns:
+            List of product dictionaries
+        """
+        try:
+            # IMPORTANT: Get more products than limit to allow for search filtering
+            # We'll fetch up to 100 products, filter by search, then apply limit
+            max_fetch = 100 if search_query else limit
+            
+            # Use cached function to fetch products
+            products = _get_cached_products(category, max_fetch)
+            
+            # Apply search filter BEFORE limiting results
+            # This fixes the bug where search wouldn't work if first N products didn't match
             if search_query:
                 search_lower = search_query.lower()
                 products = [
@@ -183,7 +216,9 @@ class FirebaseService:
                        search_lower in p.get('description', '').lower()
                 ]
             
-            return products
+            # Apply limit AFTER search filtering
+            return products[:limit]
+            
         except Exception as e:
             st.error(f"Error fetching products: {str(e)}")
             return []
@@ -206,14 +241,18 @@ class FirebaseService:
             st.error(f"Error fetching product: {str(e)}")
             return None
     
-    def get_categories(self) -> List[str]:
-        """Get all available product categories."""
+    def _fetch_categories_from_db(self) -> List[str]:
+        """
+        Internal method to fetch categories from Firestore.
+        This is the actual database query that gets cached.
+        """
         try:
             db = self.get_db()
             if db is None:
                 return []
             
-            docs = db.collection('products').stream()
+            # Only fetch active products to reduce reads
+            docs = db.collection('products').where('active', '==', True).stream()
             
             categories = set()
             for doc in docs:
@@ -225,6 +264,18 @@ class FirebaseService:
         except Exception as e:
             st.error(f"Error fetching categories: {str(e)}")
             return []
+    
+    
+    def get_categories(self) -> List[str]:
+        """
+        Get all available product categories.
+        Results are cached for 1 hour to dramatically reduce Firebase read costs.
+        Categories are cached longer than products since they change less frequently.
+        
+        Returns:
+            Sorted list of category names
+        """
+        return _get_cached_categories()
     
     def get_user_cart(self, user_id: str) -> List[Dict[str, Any]]:
         """Get user's shopping cart."""
@@ -402,4 +453,46 @@ class FirebaseService:
         except Exception as e:
             st.error(f"Error uploading image: {str(e)}")
             return None
+
+
+# ==================== Cached Helper Functions ====================
+# These functions are at module level to enable proper caching with @st.cache_data
+
+@st.cache_data(ttl=600)  # Cache for 10 minutes
+def _get_cached_products(category: Optional[str] = None, max_fetch: int = 100) -> List[Dict[str, Any]]:
+    """
+    Cached helper function to fetch products from Firestore.
+    This function is cached to dramatically reduce Firebase read costs.
+    
+    Args:
+        category: Optional category filter
+        max_fetch: Maximum number of products to fetch from database
+        
+    Returns:
+        List of product dictionaries
+    """
+    try:
+        firebase = FirebaseService()
+        return firebase._fetch_products_from_db(category, max_fetch)
+    except Exception as e:
+        st.error(f"Error in cached products fetch: {str(e)}")
+        return []
+
+
+@st.cache_data(ttl=3600)  # Cache for 1 hour (categories change infrequently)
+def _get_cached_categories() -> List[str]:
+    """
+    Cached helper function to fetch categories from Firestore.
+    This function is cached for 1 hour to dramatically reduce Firebase read costs.
+    Categories are cached longer than products since they change less frequently.
+    
+    Returns:
+        Sorted list of category names
+    """
+    try:
+        firebase = FirebaseService()
+        return firebase._fetch_categories_from_db()
+    except Exception as e:
+        st.error(f"Error in cached categories fetch: {str(e)}")
+        return []
 
