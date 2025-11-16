@@ -196,6 +196,10 @@ def render_sidebar():
             if st.button("Sign Out"):
                 st.session_state.user = None
                 st.session_state.cart_count = 0
+                if 'id_token' in st.session_state:
+                    del st.session_state.id_token
+                if 'refresh_token' in st.session_state:
+                    del st.session_state.refresh_token
                 st.session_state.page = 'home'
                 st.rerun()
         else:
