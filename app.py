@@ -172,8 +172,16 @@ def render_sidebar():
                 
                 if st.session_state.selected_category:
                     st.info(f"Selected: {st.session_state.selected_category}")
+            else:
+                # Only show message if Firebase is initialized but no categories found
+                if st.session_state.get('firebase_initialized', False):
+                    st.info("No categories available yet.")
         except Exception as e:
-            st.error(f"Error loading categories: {str(e)}")
+            # Only show error once, and only if it's not a Firebase initialization error
+            if 'firebase_error_shown' not in st.session_state:
+                error_msg = str(e)
+                if 'service account certificate' not in error_msg.lower():
+                    st.warning("Categories temporarily unavailable.")
         
         st.divider()
         
@@ -214,10 +222,19 @@ def render_home_page():
             st.subheader("Featured Products")
             render_product_grid(products, columns=4)
         else:
-            st.info("No products available. Check back soon!")
+            # Only show message if Firebase is initialized
+            if st.session_state.get('firebase_initialized', False):
+                st.info("No products available. Check back soon!")
+            else:
+                st.info("Loading products...")
             
     except Exception as e:
-        st.error(f"Error loading products: {str(e)}")
+        # Don't show Firebase initialization errors here (already shown in service)
+        error_msg = str(e)
+        if 'service account certificate' not in error_msg.lower() and 'firebase' not in error_msg.lower():
+            if 'products_error_shown' not in st.session_state:
+                st.warning("Products temporarily unavailable. Please try again later.")
+                st.session_state.products_error_shown = True
 
 
 def render_products_page():
@@ -251,10 +268,18 @@ def render_products_page():
         if products:
             render_product_grid(products, columns=4)
         else:
-            st.info("No products found matching your criteria.")
+            if st.session_state.get('firebase_initialized', False):
+                st.info("No products found matching your criteria.")
+            else:
+                st.info("Loading products...")
             
     except Exception as e:
-        st.error(f"Error loading products: {str(e)}")
+        # Don't show Firebase initialization errors here
+        error_msg = str(e)
+        if 'service account certificate' not in error_msg.lower() and 'firebase' not in error_msg.lower():
+            if 'products_error_shown' not in st.session_state:
+                st.warning("Products temporarily unavailable. Please try again later.")
+                st.session_state.products_error_shown = True
 
 
 def render_product_detail_page():
