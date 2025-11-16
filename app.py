@@ -2,191 +2,352 @@
 E-Commerce Platform - Main Application
 A professional e-commerce platform built with Streamlit, Firebase, and Python.
 Inspired by MercadoLibre, Amazon, and Temu.
+
+MEJORA DE UI:
+- Refactorizado completo del Header.
+- Soporte bilingüe (ES/EN).
+- CSS actualizado a la nueva paleta de diseño.
+- Lógica de layout modificada (sidebar solo en productos).
+- Página de carrito rediseñada con 2 columnas.
+- Footer profesional de 4 columnas.
 """
 import streamlit as st
 import sys
 from typing import Optional, Dict, Any
 
-# Configure page
+# --- Configuración de Página ---
+# Se mantiene 'wide' y 'collapsed' como en la propuesta
 st.set_page_config(
-    page_title="E-Commerce Platform",
-    page_icon="ðŸ›’",
+    page_title="SAVA E-Commerce",
+    page_icon="https" + "://github.com/GIUSEPPESAN21/LOGO-SAVA/blob/main/LOGO.jpg?raw=true", # Icono de SAVA
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for professional and modern look
+# --- INYECCIÓN DE CSS MEJORADO ---
+# Basado en la Propuesta de Interfaz (modelo_mercadolibre.md)
 st.markdown("""
     <style>
-        /* Main container */
-        .main {
-            padding-top: 1rem;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        /* --- 1. Globales y Tipografía (Inter) --- */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        html, body, [class*="st-"], .main {
+            font-family: 'Inter', sans-serif;
+            background-color: #F5F5F5; /* Fondo gris claro */
         }
         
-        /* Header styling */
-        .header-container {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-        }
-        
-        /* Buttons */
-        .stButton>button {
-            width: 100%;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: none;
-        }
-        
-        .stButton>button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* Product cards */
-        .product-card {
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin: 0.5rem 0;
-            background: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .product-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transform: translateY(-2px);
-        }
-        
-        /* Cart badge */
-        .cart-badge {
-            background: #ff4444;
-            color: white;
-            border-radius: 50%;
-            padding: 0.2rem 0.5rem;
-            font-size: 0.8rem;
-            margin-left: 0.5rem;
-            font-weight: bold;
-        }
-        
-        /* Footer */
-        .footer {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: white;
-            padding: 2rem;
-            margin-top: 4rem;
-            border-radius: 15px 15px 0 0;
-            text-align: center;
-        }
-        
-        .footer a {
-            color: #3498db;
-            text-decoration: none;
-        }
-        
-        .footer a:hover {
-            text-decoration: underline;
-        }
-        
-        /* Company info section */
-        .company-section {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin: 2rem 0;
-        }
-        
-        /* Founder card */
-        .founder-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin: 1rem 0;
-        }
-        
-        /* Hide Streamlit default elements */
+        /* Ocultar elementos por defecto de Streamlit */
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
         header {visibility: hidden;}
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
+
+        /* --- 2. Header Personalizado --- */
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            background-color: #FFF159; /* Acento MercadoLibre */
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #E0E0E0;
         }
         
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+        .header-main-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        ::-webkit-scrollbar-thumb {
-            background: #667eea;
-            border-radius: 5px;
+        .header-logo {
+            width: 120px;
+        }
+
+        .header-search {
+            flex-grow: 1;
+            margin: 0 2rem;
         }
         
-        ::-webkit-scrollbar-thumb:hover {
-            background: #764ba2;
+        .header-search .stTextInput input {
+            border-radius: 25px;
+            border: 1px solid #E0E0E0;
+            padding-left: 1.5rem;
+            background-color: white;
         }
         
-        /* Logo styling */
-        .logo-container {
+        .header-nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        
+        .header-nav-links .stButton>button {
+            background: none;
+            border: none;
+            color: #333333;
+            font-weight: 400;
+            padding: 0.5rem;
+            transition: color 0.2s;
+        }
+        
+        .header-nav-links .stButton>button:hover {
+            color: #667eea; /* Color SAVA */
+            transform: none;
+            box-shadow: none;
+        }
+
+        .cart-button-wrapper {
+            position: relative;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            justify-content: center;
         }
         
-        /* Info boxes */
-        .stInfo {
-            border-left: 4px solid #667eea;
+        /* Contenedor principal con padding para el header fijo */
+        .main .block-container {
+            padding-top: 100px; /* Ajustar según altura del header */
+        }
+
+        /* --- 3. Tarjeta de Producto (Product Card) --- */
+        /* Estilos aplicados a la estructura de components/product_card.py */
+        div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] > div[data-testid="stContainer"] {
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 1rem;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
         }
         
-        /* Success messages */
-        .stSuccess {
-            border-left: 4px solid #28a745;
+        div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] > div[data-testid="stContainer"]:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
         }
         
-        /* Error messages */
-        .stError {
-            border-left: 4px solid #dc3545;
+        /* --- 4. Botones --- */
+        .stButton>button {
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            width: 100%;
         }
+        
+        /* Botón Primario (Comprar, Checkout) */
+        .stButton>button[kind="primary"] {
+            background-color: #667eea; /* Color SAVA */
+            color: white;
+        }
+        .stButton>button[kind="primary"]:hover {
+            background-color: #5a6ec0;
+        }
+        
+        /* Botón Secundario (Ver Detalles) */
+        .stButton>button[kind="secondary"] {
+            background-color: #E0E0E0;
+            color: #333333;
+        }
+        
+        /* --- 5. Footer --- */
+        .app-footer {
+            background: #333333;
+            color: #FFFFFF;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+            border-radius: 15px 15px 0 0;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .footer-col h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #FFF159; /* Acento */
+        }
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-col li {
+            margin-bottom: 0.75rem;
+        }
+        .footer-col a {
+            color: #F5F5F5;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer-col a:hover {
+            color: #FFF159;
+            text-decoration: underline;
+        }
+        .footer-copyright {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #555555;
+            font-size: 0.9rem;
+            color: #AAAAAA;
+        }
+
     </style>
 """, unsafe_allow_html=True)
 
 
-# Initialize session state
+# --- TEXTOS BILINGÜES (ES/EN) ---
+# Se centraliza el texto para facilitar la traducción
+TEXTS = {
+    'ES': {
+        'search_placeholder': "Buscar productos, marcas y más...",
+        'nav_categories': "Categorías",
+        'nav_deals': "Ofertas",
+        'nav_history': "Historial",
+        'nav_sell': "Vender",
+        'user_welcome': "Bienvenido",
+        'user_account': "Mi Cuenta",
+        'user_orders': "Mis Compras",
+        'user_logout': "Cerrar Sesión",
+        'nav_signin': "Ingresa",
+        'nav_signup': "Crea tu cuenta",
+        'nav_cart': "Carrito",
+        'page_home_title': "Bienvenido a SAVA E-Commerce",
+        'page_home_subtitle': "Descubre productos increíbles a precios imbatibles.",
+        'page_featured_products': "Productos Destacados",
+        'page_products': "Productos",
+        'page_cart': "Carrito de Compras",
+        'page_checkout': "Finalizar Compra",
+        'page_account': "Mi Cuenta",
+        'page_orders': "Mis Pedidos",
+        'page_about': "Acerca de Nosotros",
+        'filter_title': "Filtrar por",
+        'filter_categories': "Categorías",
+        'filter_all_categories': "Todas las Categorías",
+        'filter_selected': "Seleccionado",
+        'cart_empty': "Tu carrito está vacío.",
+        'cart_browse': "Descubrir productos",
+        'cart_summary': "Resumen de compra",
+        'cart_subtotal': "Subtotal",
+        'cart_shipping': "Envío",
+        'cart_tax': "Impuestos",
+        'cart_total': "Total",
+        'cart_checkout_button': "Continuar Compra",
+        'cart_item_list': "Lista de Productos",
+        'back_to_products': "← Volver a Productos",
+        'add_to_cart': "Agregar al Carrito",
+        'in_stock': "En Stock",
+        'out_of_stock': "Agotado",
+        'footer_col1_title': "Atención al Cliente",
+        'footer_col1_l1': "Ayuda y Soporte",
+        'footer_col1_l2': "Garantía",
+        'footer_col1_l3': "Devoluciones",
+        'footer_col2_title': "Acerca de SAVA",
+        'footer_col2_l1': "Quiénes somos",
+        'footer_col2_l2': "Trabaja con nosotros",
+        'footer_col3_title': "Métodos de Pago",
+        'footer_col3_l1': "Tarjetas de Crédito",
+        'footer_col3_l2': "PayPal",
+        'footer_col4_title': "Síguenos",
+        'footer_col4_l1': "GitHub",
+        'footer_col4_l2': "LinkedIn",
+        'footer_copyright': "© 2025 SAVA Software for Engineering. Todos los derechos reservados."
+    },
+    'EN': {
+        'search_placeholder': "Search products, brands, and more...",
+        'nav_categories': "Categories",
+        'nav_deals': "Deals",
+        'nav_history': "History",
+        'nav_sell': "Sell",
+        'user_welcome': "Welcome",
+        'user_account': "My Account",
+        'user_orders': "My Purchases",
+        'user_logout': "Sign Out",
+        'nav_signin': "Sign In",
+        'nav_signup': "Create your account",
+        'nav_cart': "Cart",
+        'page_home_title': "Welcome to SAVA E-Commerce",
+        'page_home_subtitle': "Discover amazing products at unbeatable prices.",
+        'page_featured_products': "Featured Products",
+        'page_products': "Products",
+        'page_cart': "Shopping Cart",
+        'page_checkout': "Checkout",
+        'page_account': "My Account",
+        'page_orders': "My Orders",
+        'page_about': "About Us",
+        'filter_title': "Filter by",
+        'filter_categories': "Categories",
+        'filter_all_categories': "All Categories",
+        'filter_selected': "Selected",
+        'cart_empty': "Your cart is empty.",
+        'cart_browse': "Browse Products",
+        'cart_summary': "Order Summary",
+        'cart_subtotal': "Subtotal",
+        'cart_shipping': "Shipping",
+        'cart_tax': "Taxes",
+        'cart_total': "Total",
+        'cart_checkout_button': "Proceed to Checkout",
+        'cart_item_list': "Product List",
+        'back_to_products': "← Back to Products",
+        'add_to_cart': "Add to Cart",
+        'in_stock': "In Stock",
+        'out_of_stock': "Out of Stock",
+        'footer_col1_title': "Customer Service",
+        'footer_col1_l1': "Help & Support",
+        'footer_col1_l2': "Warranty",
+        'footer_col1_l3': "Returns",
+        'footer_col2_title': "About SAVA",
+        'footer_col2_l1': "About Us",
+        'footer_col2_l2': "Work with us",
+        'footer_col3_title': "Payment Methods",
+        'footer_col3_l1': "Credit Cards",
+        'footer_col3_l2': "PayPal",
+        'footer_col4_title': "Follow Us",
+        'footer_col4_l1': "GitHub",
+        'footer_col4_l2': "LinkedIn",
+        'footer_copyright': "© 2025 SAVA Software for Engineering. All rights reserved."
+    }
+}
+
+# --- Inicialización de Session State ---
 def init_session_state():
     """Initialize session state variables."""
     if 'page' not in st.session_state:
         st.session_state.page = 'home'
-    
     if 'user' not in st.session_state:
         st.session_state.user = None
-    
     if 'cart_count' not in st.session_state:
         st.session_state.cart_count = 0
-    
     if 'search_query' not in st.session_state:
         st.session_state.search_query = ''
-    
     if 'selected_category' not in st.session_state:
         st.session_state.selected_category = None
-    
     if 'selected_product_id' not in st.session_state:
         st.session_state.selected_product_id = None
-    
     if 'auth_tab' not in st.session_state:
         st.session_state.auth_tab = 'login'
+    # MEJORA: Añadir idioma al session state
+    if 'lang' not in st.session_state:
+        st.session_state.lang = 'ES'
 
-
-# Initialize session state
 init_session_state()
-
+T = TEXTS[st.session_state.lang] # Objeto de texto global
 
 # ==================== Helper Functions ====================
 
@@ -198,130 +359,159 @@ def update_cart_count():
         
         if st.session_state.user:
             cart = firebase.get_user_cart(st.session_state.user['uid'])
-            st.session_state.cart_count = len(cart) if cart else 0
+            st.session_state.cart_count = sum(item.get('quantity', 0) for item in cart)
         else:
             st.session_state.cart_count = 0
     except Exception as e:
         st.session_state.cart_count = 0
 
+def navigate_to(page: str):
+    """Helper function to navigate pages."""
+    st.session_state.page = page
+    st.rerun()
 
+# --- MEJORA: Header completamente refactorizado ---
 def render_header():
     """Render application header with navigation."""
-    # Header with logo and navigation
-    col_logo, col_nav = st.columns([1, 4])
     
-    with col_logo:
-        st.image("https://github.com/GIUSEPPESAN21/LOGO-SAVA/blob/main/LOGO.jpg?raw=true", width=120)
+    st.markdown('<div class="app-header">', unsafe_allow_html=True)
     
-    with col_nav:
-        nav_cols = st.columns([2, 1, 1, 1, 1, 1])
+    with st.container():
+        # --- 1. Barra Principal ---
+        cols = st.columns([1.5, 5, 3]) # Logo, Búsqueda, Acciones
         
-        with nav_cols[0]:
-            st.markdown("### 🛒 E-Commerce Platform")
-            st.caption("Powered by SAVA Software")
+        with cols[0]:
+            st.image(
+                "https://github.com/GIUSEPPESAN21/LOGO-SAVA/blob/main/LOGO.jpg?raw=true", 
+                width=120,
+            )
+            if st.session_state.page != 'home':
+                if st.button("SAVA E-Commerce", use_container_width=False):
+                     navigate_to('home')
         
-        with nav_cols[1]:
-            if st.button("🏠 Home", use_container_width=True):
-                st.session_state.page = 'home'
+        with cols[1]:
+            # Barra de búsqueda central
+            search_query = st.text_input(
+                label="Search",
+                placeholder=T['search_placeholder'],
+                value=st.session_state.search_query,
+                key="header_search",
+                label_visibility="collapsed"
+            )
+            if search_query != st.session_state.search_query:
+                st.session_state.search_query = search_query
+                st.session_state.page = 'products' # Forzar a página de productos al buscar
                 st.rerun()
         
-        with nav_cols[2]:
-            if st.button("📦 Products", use_container_width=True):
-                st.session_state.page = 'products'
-                st.rerun()
-        
-        with nav_cols[3]:
-            cart_text = f"🛍️ Cart"
-            if st.session_state.cart_count > 0:
-                cart_text += f" ({st.session_state.cart_count})"
+        with cols[2]:
+            # Acciones de usuario y carrito
+            st.markdown('<div class="header-nav-links">', unsafe_allow_html=True)
+            nav_cols = st.columns([1, 1, 1, 1]) # Botones de acciones
             
-            if st.button(cart_text, use_container_width=True):
-                st.session_state.page = 'cart'
-                st.rerun()
+            with nav_cols[0]:
+                # Selector de Idioma
+                def on_lang_change():
+                    st.session_state.lang = st.session_state.lang_selector
+                
+                st.selectbox(
+                    label="Language",
+                    options=['ES', 'EN'],
+                    index=0 if st.session_state.lang == 'ES' else 1,
+                    key='lang_selector',
+                    on_change=on_lang_change,
+                    label_visibility="collapsed"
+                )
+
+            with nav_cols[1]:
+                # Usuario (Login o Popover de Cuenta)
+                if st.session_state.user:
+                    with st.popover(f"👤 {T['user_welcome']}, {st.session_state.user.get('display_name', 'User')}"):
+                        st.markdown(f"**{st.session_state.user.get('display_name', 'User')}**")
+                        st.markdown(f"<small>{st.session_state.user.get('email')}</small>", unsafe_allow_html=True)
+                        st.divider()
+                        if st.button(T['user_account'], use_container_width=True):
+                            navigate_to('account')
+                        if st.button(T['user_orders'], use_container_width=True):
+                            navigate_to('orders')
+                        if st.button(T['user_logout'], use_container_width=True):
+                            st.session_state.user = None
+                            st.session_state.cart_count = 0
+                            if 'id_token' in st.session_state: del st.session_state.id_token
+                            if 'refresh_token' in st.session_state: del st.session_state.refresh_token
+                            navigate_to('home')
+                else:
+                    if st.button(T['nav_signin'], use_container_width=True):
+                        navigate_to('auth')
+
+            with nav_cols[2]:
+                if not st.session_state.user:
+                    if st.button(T['nav_signup'], use_container_width=True):
+                        st.session_state.auth_tab = 'register'
+                        navigate_to('auth')
+
+            with nav_cols[3]:
+                # Carrito
+                st.markdown('<div class="cart-button-wrapper">', unsafe_allow_html=True)
+                if st.button(f"🛒 {T['nav_cart']}", use_container_width=True):
+                    navigate_to('cart')
+                if st.session_state.cart_count > 0:
+                    st.markdown(f'<div class="cart-badge">{st.session_state.cart_count}</div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+
+            st.markdown('</div>', unsafe_allow_html=True)
+            
+        # --- 2. Barra de Navegación (Inferior) ---
+        st.markdown('<div style="margin-top: 1rem;">', unsafe_allow_html=True)
+        nav_cols_bottom = st.columns(6)
         
-        with nav_cols[4]:
-            if st.button("ℹ️ About", use_container_width=True):
-                st.session_state.page = 'about'
-                st.rerun()
-        
-        with nav_cols[5]:
-            if st.session_state.user:
-                if st.button("👤 Account", use_container_width=True):
-                    st.session_state.page = 'account'
-                    st.rerun()
-            else:
-                if st.button("🔐 Sign In", use_container_width=True):
-                    st.session_state.page = 'auth'
-                    st.rerun()
-    
-    st.divider()
-    
-    # Old header code - keeping for reference but not used
-    col1, col2, col3, col4, col5 = st.columns([2, 1, 1, 1, 1])
-    
-    with col1:
-        pass  # Logo now shown above
-    
-    with col2:
-        if st.button("ðŸ  Home"):
-            st.session_state.page = 'home'
-            st.rerun()
-    
-    with col3:
-        if st.button("ðŸ“¦ Products"):
-            st.session_state.page = 'products'
-            st.rerun()
-    
-    with col4:
-        cart_text = f"ðŸ›ï¸ Cart"
-        if st.session_state.cart_count > 0:
-            cart_text += f" ({st.session_state.cart_count})"
-        
-        if st.button(cart_text):
-            st.session_state.page = 'cart'
-            st.rerun()
-    
-    with col5:
-        if st.session_state.user:
-            if st.button("ðŸ‘¤ Account"):
-                st.session_state.page = 'account'
-                st.rerun()
-        else:
-            if st.button("ðŸ” Sign In"):
-                st.session_state.page = 'auth'
-                st.rerun()
-    
-    st.divider()
+        with nav_cols_bottom[0]:
+            if st.button(T['nav_categories'], use_container_width=True):
+                st.session_state.selected_category = None # Reset
+                navigate_to('products')
+        with nav_cols_bottom[1]:
+            if st.button(T['nav_deals'], use_container_width=True):
+                # Lógica de ofertas (futuro)
+                st.info("Deals page coming soon!")
+                navigate_to('products')
+        with nav_cols_bottom[2]:
+            if st.button(T['nav_history'], use_container_width=True):
+                # Lógica de historial (futuro)
+                st.info("History page coming soon!")
+                navigate_to('account')
+        with nav_cols_bottom[3]:
+            if st.button(T['nav_sell'], use_container_width=True):
+                # Lógica de vender (futuro)
+                st.info("Sell page coming soon!")
+        with nav_cols_bottom[4]:
+             if st.button(T['page_about'], use_container_width=True):
+                navigate_to('about')
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
+# --- MEJORA: Sidebar refactorizada ---
 def render_sidebar():
-    """Render sidebar with filters and navigation."""
+    """
+    Render sidebar with filters.
+    MEJORA: Esta función ahora solo debe ser llamada en `products_page`.
+    Se ha eliminado la navegación y la info de usuario (movida al header).
+    """
     with st.sidebar:
-        st.title("Filters")
-        
-        # Search
-        search_query = st.text_input(
-            "Search products",
-            value=st.session_state.search_query,
-            placeholder="Enter product name..."
-        )
-        
-        if search_query != st.session_state.search_query:
-            st.session_state.search_query = search_query
-            st.rerun()
-        
+        st.title(T['filter_title'])
         st.divider()
         
-        # Categories
+        # Categorías
         try:
             from services.firebase_service import FirebaseService
             firebase = FirebaseService()
             categories = firebase.get_categories()
             
             if categories:
-                st.subheader("Categories")
+                st.subheader(T['filter_categories'])
                 
-                if st.button("All Categories"):
+                if st.button(T['filter_all_categories']):
                     st.session_state.selected_category = None
                     st.rerun()
                 
@@ -331,69 +521,50 @@ def render_sidebar():
                         st.rerun()
                 
                 if st.session_state.selected_category:
-                    st.info(f"Selected: {st.session_state.selected_category}")
+                    st.info(f"{T['filter_selected']}: {st.session_state.selected_category}")
             else:
-                # Only show message if Firebase is initialized but no categories found
                 if st.session_state.get('firebase_initialized', False):
                     st.info("No categories available yet.")
         except Exception as e:
-            # Only show error once, and only if it's not a Firebase initialization error
             if 'firebase_error_shown' not in st.session_state:
                 error_msg = str(e)
                 if 'service account certificate' not in error_msg.lower():
                     st.warning("Categories temporarily unavailable.")
         
         st.divider()
-        
-        # User info
-        if st.session_state.user:
-            st.write(f"**Welcome, {st.session_state.user.get('display_name', 'User')}!**")
-            
-            if st.button("My Orders"):
-                st.session_state.page = 'orders'
-                st.rerun()
-            
-            if st.button("Sign Out"):
-                st.session_state.user = None
-                st.session_state.cart_count = 0
-                if 'id_token' in st.session_state:
-                    del st.session_state.id_token
-                if 'refresh_token' in st.session_state:
-                    del st.session_state.refresh_token
-                st.session_state.page = 'home'
-                st.rerun()
-        else:
-            st.info("Sign in to access your account and cart")
+        # Aquí se pueden añadir más filtros (Precio, Marca, etc.)
 
 
 # ==================== Page Functions ====================
 
 def render_home_page():
     """Render home page with featured products."""
-    st.title("Welcome to Our E-Commerce Platform")
-    st.markdown("Discover amazing products at unbeatable prices!")
+    st.title(T['page_home_title'])
+    st.markdown(T['page_home_subtitle'])
+    
+    # MEJORA: Añadir banner hero (placeholder)
+    st.image(
+        "https://placehold.co/1200x300/667eea/FFFFFF?text=ENVÍO+GRATIS+EN+TU+PRIMERA+COMPRA",
+        use_container_width=True
+    )
     
     try:
         from services.firebase_service import FirebaseService
         from components.product_list import render_product_grid
         
         firebase = FirebaseService()
-        
-        # Get featured products
-        products = firebase.get_products(limit=12)
+        products = firebase.get_products(limit=8) # Limitar a 8 para la home
         
         if products:
-            st.subheader("Featured Products")
-            render_product_grid(products, columns=4)
+            st.subheader(T['page_featured_products'])
+            render_product_grid(products, columns=4) # 4 columnas
         else:
-            # Only show message if Firebase is initialized
             if st.session_state.get('firebase_initialized', False):
                 st.info("No products available. Check back soon!")
             else:
                 st.info("Loading products...")
             
     except Exception as e:
-        # Don't show Firebase initialization errors here (already shown in service)
         error_msg = str(e)
         if 'service account certificate' not in error_msg.lower() and 'firebase' not in error_msg.lower():
             if 'products_error_shown' not in st.session_state:
@@ -403,7 +574,10 @@ def render_home_page():
 
 def render_products_page():
     """Render products page with search and filters."""
-    st.title("Products")
+    st.title(T['page_products'])
+    
+    # MEJORA: La sidebar SÓLO se renderiza aquí
+    render_sidebar()
     
     try:
         from services.firebase_service import FirebaseService
@@ -411,14 +585,12 @@ def render_products_page():
         
         firebase = FirebaseService()
         
-        # Get products with filters
         products = firebase.get_products(
             limit=24,
             category=st.session_state.selected_category,
             search_query=st.session_state.search_query
         )
         
-        # Display filters active
         filters_active = []
         if st.session_state.search_query:
             filters_active.append(f"Search: {st.session_state.search_query}")
@@ -428,7 +600,6 @@ def render_products_page():
         if filters_active:
             st.info(" | ".join(filters_active))
         
-        # Display products
         if products:
             render_product_grid(products, columns=4)
         else:
@@ -438,7 +609,6 @@ def render_products_page():
                 st.info("Loading products...")
             
     except Exception as e:
-        # Don't show Firebase initialization errors here
         error_msg = str(e)
         if 'service account certificate' not in error_msg.lower() and 'firebase' not in error_msg.lower():
             if 'products_error_shown' not in st.session_state:
@@ -452,8 +622,7 @@ def render_product_detail_page():
     
     if not product_id:
         st.warning("No product selected.")
-        st.session_state.page = 'home'
-        st.rerun()
+        navigate_to('home')
         return
     
     try:
@@ -465,144 +634,192 @@ def render_product_detail_page():
         
         if not product:
             st.error("Product not found.")
-            st.session_state.page = 'home'
-            st.rerun()
+            navigate_to('home')
             return
         
-        # Back button
-        if st.button("â† Back to Products"):
+        if st.button(T['back_to_products']):
             st.session_state.selected_product_id = None
-            st.session_state.page = 'products'
-            st.rerun()
+            navigate_to('products')
         
-        col1, col2 = st.columns([1, 1])
-        
-        with col1:
-            images = product.get('images', [])
-            if images:
-                main_image = images[0].get('url', '')
-                st.image(main_image, use_container_width=True)
-            else:
-                st.image("https://via.placeholder.com/500x500?text=No+Image", use_container_width=True)
+        # MEJORA: Layout de 2 columnas con fondo blanco
+        with st.container():
+            st.markdown('<div style="background: white; padding: 2rem; border-radius: 8px;">', unsafe_allow_html=True)
+            col1, col2 = st.columns([1, 1])
             
-            # Additional images
-            if len(images) > 1:
-                cols = st.columns(min(len(images) - 1, 4))
-                for i, img in enumerate(images[1:5]):
-                    with cols[i]:
-                        st.image(img.get('url', ''), use_container_width=True)
-        
-        with col2:
-            st.title(product.get('name', 'Product'))
-            
-            # Price
-            price = product.get('price', 0)
-            st.markdown(f"## {format_currency(price)}")
-            
-            # Rating
-            rating = product.get('rating', 0)
-            reviews_count = product.get('reviews_count', 0)
-            if rating > 0:
-                stars = "â­" * int(rating) + "â˜†" * (5 - int(rating))
-                st.markdown(f"{stars} ({reviews_count} reviews)")
-            
-            # Stock
-            stock = product.get('stock', 0)
-            in_stock = stock > 0
-            if in_stock:
-                st.success(f"âœ“ In Stock ({stock} available)")
-            else:
-                st.error("âœ— Out of Stock")
-            
-            # Description
-            description = product.get('description', '')
-            if description:
-                st.markdown("### Description")
-                st.write(description)
-            
-            # Add to cart (if logged in)
-            if st.session_state.user:
-                if in_stock:
-                    col_qty, col_add = st.columns([1, 2])
-                    
-                    with col_qty:
-                        quantity = st.number_input(
-                            "Quantity",
-                            min_value=1,
-                            max_value=min(stock, 99),
-                            value=1,
-                            key="product_detail_qty"
-                        )
-                    
-                    with col_add:
-                        if st.button("Add to Cart", type="primary", use_container_width=True):
-                            success = firebase.add_to_cart(
-                                st.session_state.user['uid'],
-                                product_id,
-                                quantity
-                            )
-                            
-                            if success:
-                                st.success("Added to cart!")
-                                update_cart_count()
-                                st.rerun()
-                            else:
-                                st.error("Failed to add to cart")
+            with col1:
+                images = product.get('images', [])
+                if images:
+                    st.image(images[0].get('url', ''), use_container_width=True)
                 else:
-                    st.warning("This product is currently out of stock.")
-            else:
-                st.info("ðŸ” Sign in to add items to your cart")
-        
-        # Additional details
-        st.divider()
-        st.subheader("Product Details")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            if product.get('category'):
-                st.write(f"**Category:** {product.get('category')}")
-            if product.get('brand'):
-                st.write(f"**Brand:** {product.get('brand')}")
-            if product.get('sku'):
-                st.write(f"**SKU:** {product.get('sku')}")
-        
-        with col2:
-            if product.get('weight'):
-                st.write(f"**Weight:** {product.get('weight')} lbs")
-            if product.get('dimensions'):
-                st.write(f"**Dimensions:** {product.get('dimensions')}")
+                    st.image("https://placehold.co/500x500/F5F5F5/AAAAAA?text=No+Image", use_container_width=True)
+                
+                if len(images) > 1:
+                    cols_thumb = st.columns(min(len(images) - 1, 4))
+                    for i, img in enumerate(images[1:5]):
+                        with cols_thumb[i]:
+                            st.image(img.get('url', ''), use_container_width=True)
+            
+            with col2:
+                st.title(product.get('name', 'Product'))
+                
+                rating = product.get('rating', 0)
+                reviews_count = product.get('reviews_count', 0)
+                if rating > 0:
+                    stars = "⭐" * int(rating) + "☆" * (5 - int(rating))
+                    st.markdown(f"{stars} ({reviews_count} reviews)")
+                
+                price = product.get('price', 0)
+                st.markdown(f"## {format_currency(price)}")
+                
+                # MEJORA: Info de envío (crítico)
+                st.markdown(f"🚚 **{T['cart_shipping']}**: {format_currency(5.99)} - _Llega mañana_")
+                
+                stock = product.get('stock', 0)
+                in_stock = stock > 0
+                if in_stock:
+                    st.success(f"✓ {T['in_stock']} ({stock} available)")
+                else:
+                    st.error(f"✗ {T['out_of_stock']}")
+                
+                if st.session_state.user:
+                    if in_stock:
+                        col_qty, col_add = st.columns([1, 2])
+                        with col_qty:
+                            quantity = st.number_input(
+                                "Quantity",
+                                min_value=1,
+                                max_value=min(stock, 99),
+                                value=1,
+                                key="product_detail_qty",
+                                label_visibility="collapsed"
+                            )
+                        with col_add:
+                            if st.button(T['add_to_cart'], type="primary", use_container_width=True):
+                                success = firebase.add_to_cart(
+                                    st.session_state.user['uid'],
+                                    product_id,
+                                    quantity
+                                )
+                                if success:
+                                    st.success("Added to cart!")
+                                    update_cart_count()
+                                    st.rerun()
+                                else:
+                                    st.error("Failed to add to cart")
+                    else:
+                        st.warning("This product is currently out of stock.")
+                else:
+                    st.info(f"🔐 {T['nav_signin']} to add items to your cart")
+                
+                st.divider()
+                description = product.get('description', '')
+                if description:
+                    st.markdown("### Description")
+                    st.write(description)
+            
+            st.markdown('</div>', unsafe_allow_html=True)
         
     except Exception as e:
         st.error(f"Error loading product: {str(e)}")
 
 
+# --- MEJORA: Página de carrito refactorizada (2 columnas) ---
 def render_cart_page():
-    """Render cart page."""
+    """Render cart page with 2-column layout."""
     if not st.session_state.user:
         st.warning("Please sign in to view your cart.")
-        st.session_state.page = 'auth'
-        st.rerun()
+        navigate_to('auth')
         return
     
-    st.title("Shopping Cart")
+    st.title(T['page_cart'])
     
     try:
         from services.firebase_service import FirebaseService
-        from components.cart_summary import render_cart_summary
+        from utils.formatters import format_currency, calculate_total
+        # Importar el componente original para re-usar su lógica interna
+        from components.cart_summary import render_cart_summary 
         
         firebase = FirebaseService()
         cart_items = firebase.get_user_cart(st.session_state.user['uid'])
-        
         update_cart_count()
-        
-        if cart_items:
-            render_cart_summary(cart_items)
-        else:
-            st.info("Your cart is empty.")
-            if st.button("Browse Products"):
-                st.session_state.page = 'products'
+
+        if not cart_items:
+            st.info(T['cart_empty'])
+            if st.button(T['cart_browse']):
+                navigate_to('products')
+            return
+
+        # Layout de 2 columnas
+        col_items, col_summary = st.columns([2, 1])
+
+        with col_items:
+            st.subheader(T['cart_item_list'])
+            st.markdown('<div style="background: white; padding: 1rem; border-radius: 8px;">', unsafe_allow_html=True)
+            
+            # Re-implementar la lógica de lista de items (ya que no puedo editar cart_summary.py)
+            def handle_quantity_change(user_id: str, product_id: str, new_quantity_key: str):
+                new_quantity = st.session_state.get(new_quantity_key)
+                if new_quantity is None: return
+                firebase.update_cart_item(user_id, product_id, new_quantity)
                 st.rerun()
+
+            for item in cart_items:
+                with st.container():
+                    c1, c2, c3, c4 = st.columns([1, 3, 1, 1])
+                    with c1:
+                        st.image(item.get('image', 'https://placehold.co/80x80'), width=80)
+                    with c2:
+                        st.write(f"**{item.get('name', 'Product')}**")
+                        st.write(format_currency(item.get('price', 0)))
+                    with c3:
+                        quantity_key = f"cart_qty_{item['product_id']}"
+                        st.number_input(
+                            "Qty",
+                            min_value=1,
+                            max_value=99,
+                            value=item.get('quantity', 1),
+                            key=quantity_key,
+                            on_change=handle_quantity_change,
+                            kwargs={
+                                'user_id': st.session_state.user['uid'],
+                                'product_id': item['product_id'],
+                                'new_quantity_key': quantity_key
+                            },
+                            label_visibility="collapsed"
+                        )
+                    with c4:
+                        if st.button("🗑️", key=f"cart_remove_{item['product_id']}"):
+                            firebase.update_cart_item(st.session_state.user['uid'], item['product_id'], 0)
+                            st.rerun()
+                    st.divider()
+            
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        with col_summary:
+            st.subheader(T['cart_summary'])
+            st.markdown('<div style="background: white; padding: 1.5rem; border-radius: 8px; border: 1px solid #E0E0E0;">', unsafe_allow_html=True)
+            
+            totals = calculate_total(cart_items, tax_rate=0.08, shipping=5.99)
+            
+            col_label, col_value = st.columns(2)
+            with col_label:
+                st.write(f"{T['cart_subtotal']}:")
+                st.write(f"{T['cart_tax']} (8%):")
+                st.write(f"{T['cart_shipping']}:")
+                st.markdown(f"**{T['cart_total']}:**")
+            with col_value:
+                st.write(format_currency(totals['subtotal']))
+                st.write(format_currency(totals['tax']))
+                st.write(format_currency(totals['shipping']))
+                st.markdown(f"**{format_currency(totals['total'])}**")
+            
+            st.divider()
+            
+            if st.button(T['cart_checkout_button'], type="primary", use_container_width=True):
+                st.session_state.checkout_step = 'shipping'
+                navigate_to('checkout')
+            
+            st.markdown('</div>', unsafe_allow_html=True)
     
     except Exception as e:
         st.error(f"Error loading cart: {str(e)}")
@@ -612,11 +829,10 @@ def render_checkout_page():
     """Render checkout page."""
     if not st.session_state.user:
         st.warning("Please sign in to checkout.")
-        st.session_state.page = 'auth'
-        st.rerun()
+        navigate_to('auth')
         return
     
-    st.title("Checkout")
+    st.title(T['page_checkout'])
     
     try:
         from services.firebase_service import FirebaseService
@@ -627,23 +843,61 @@ def render_checkout_page():
         
         if not cart_items:
             st.warning("Your cart is empty. Add items before checkout.")
-            st.session_state.page = 'cart'
-            st.rerun()
+            navigate_to('cart')
             return
         
-        render_checkout_form(cart_items)
-    
+        # MEJORA: Dividir checkout y resumen
+        col_form, col_summary = st.columns([1.5, 1])
+        
+        with col_form:
+            st.markdown('<div style="background: white; padding: 1.5rem; border-radius: 8px;">', unsafe_allow_html=True)
+            render_checkout_form(cart_items)
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        with col_summary:
+            st.subheader(T['cart_summary'])
+            st.markdown('<div style="background: white; padding: 1.5rem; border-radius: 8px; border: 1px solid #E0E0E0;">', unsafe_allow_html=True)
+            
+            from utils.formatters import format_currency, calculate_total
+            totals = calculate_total(cart_items, tax_rate=0.08, shipping=5.99)
+            
+            for item in cart_items:
+                st.write(f"• {item.get('name')} x{item.get('quantity')}")
+            st.divider()
+            
+            col_label, col_value = st.columns(2)
+            with col_label:
+                st.write(f"{T['cart_subtotal']}:")
+                st.write(f"{T['cart_tax']}:")
+                st.write(f"{T['cart_shipping']}:")
+                st.markdown(f"**{T['cart_total']}:**")
+            with col_value:
+                st.write(format_currency(totals['subtotal']))
+                st.write(format_currency(totals['tax']))
+                st.write(format_currency(totals['shipping']))
+                st.markdown(f"**{format_currency(totals['total'])}**")
+            
+            st.markdown('</div>', unsafe_allow_html=True)
+            
     except Exception as e:
         st.error(f"Error loading checkout: {str(e)}")
 
 
 def render_auth_page():
     """Render authentication page."""
-    st.title("Account")
+    st.title(T['page_account'])
     
     from components.auth import render_login_form, render_register_form
     
-    tab1, tab2 = st.tabs(["Sign In", "Create Account"])
+    # MEJORA: Usar st.session_state.auth_tab para controlar la pestaña
+    tab_titles = [T['nav_signin'], T['nav_signup']]
+    
+    if st.session_state.auth_tab == 'register':
+        default_index = 1
+    else:
+        default_index = 0
+
+    tab1, tab2 = st.tabs(tab_titles)
     
     with tab1:
         render_login_form()
@@ -656,11 +910,10 @@ def render_account_page():
     """Render account page."""
     if not st.session_state.user:
         st.warning("Please sign in to view your account.")
-        st.session_state.page = 'auth'
-        st.rerun()
+        navigate_to('auth')
         return
     
-    st.title("My Account")
+    st.title(T['page_account'])
     
     user = st.session_state.user
     st.write(f"**Name:** {user.get('display_name', 'N/A')}")
@@ -669,17 +922,12 @@ def render_account_page():
     st.divider()
     
     col1, col2, col3 = st.columns(3)
-    
     with col1:
-        if st.button("My Orders", use_container_width=True):
-            st.session_state.page = 'orders'
-            st.rerun()
-    
+        if st.button(T['page_orders'], use_container_width=True):
+            navigate_to('orders')
     with col2:
-        if st.button("My Cart", use_container_width=True):
-            st.session_state.page = 'cart'
-            st.rerun()
-    
+        if st.button(T['page_cart'], use_container_width=True):
+            navigate_to('cart')
     with col3:
         if st.button("Edit Profile", use_container_width=True):
             st.info("Profile editing coming soon!")
@@ -689,11 +937,10 @@ def render_orders_page():
     """Render orders page."""
     if not st.session_state.user:
         st.warning("Please sign in to view your orders.")
-        st.session_state.page = 'auth'
-        st.rerun()
+        navigate_to('auth')
         return
     
-    st.title("My Orders")
+    st.title(T['page_orders'])
     
     try:
         from services.firebase_service import FirebaseService
@@ -704,7 +951,9 @@ def render_orders_page():
         
         if orders:
             for order in orders:
+                # MEJORA: Usar st.container con borde
                 with st.container():
+                    st.markdown('<div style="background: white; padding: 1.5rem; border-radius: 8px; border: 1px solid #E0E0E0; margin-bottom: 1rem;">', unsafe_allow_html=True)
                     col1, col2, col3 = st.columns([2, 1, 1])
                     
                     with col1:
@@ -721,15 +970,14 @@ def render_orders_page():
                     with col3:
                         if st.button("View Details", key=f"order_{order.get('id')}"):
                             st.session_state.selected_order_id = order.get('id')
-                            st.session_state.page = 'order_detail'
+                            st.session_state.page = 'order_detail' # Necesita implementación de esta página
                             st.rerun()
                     
-                    st.divider()
+                    st.markdown('</div>', unsafe_allow_html=True)
         else:
             st.info("You have no orders yet.")
-            if st.button("Start Shopping"):
-                st.session_state.page = 'products'
-                st.rerun()
+            if st.button(T['cart_browse']):
+                navigate_to('products')
     
     except Exception as e:
         st.error(f"Error loading orders: {str(e)}")
@@ -741,43 +989,47 @@ def render_about_page():
     render_about_content()
 
 
+# --- MEJORA: Footer completamente refactorizado ---
 def render_footer():
     """Render footer with company information and copyright."""
     st.markdown("---")
     
-    footer_html = """
-    <div style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); 
-                padding: 2rem; 
-                border-radius: 15px; 
-                margin-top: 3rem;
-                text-align: center;
-                color: white;">
-        <div style="margin-bottom: 1rem;">
-            <img src="https://github.com/GIUSEPPESAN21/LOGO-SAVA/blob/main/LOGO.jpg?raw=true" 
-                 style="width: 100px; margin-bottom: 1rem;">
+    footer_html = f"""
+    <div class="app-footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>{T['footer_col1_title']}</h4>
+                <ul>
+                    <li><a href="#">{T['footer_col1_l1']}</a></li>
+                    <li><a href="#">{T['footer_col1_l2']}</a></li>
+                    <li><a href="#">{T['footer_col1_l3']}</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>{T['footer_col2_title']}</h4>
+                <ul>
+                    <li><a href="#">{T['footer_col2_l1']}</a></li>
+                    <li><a href="#">{T['footer_col2_l2']}</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>{T['footer_col3_title']}</h4>
+                <ul>
+                    <li><span>{T['footer_col3_l1']}</span></li>
+                    <li><span>{T['footer_col3_l2']}</span></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>{T['footer_col4_title']}</h4>
+                <ul>
+                    <li><a href="https://github.com/GIUSEPPESAN21" target="_blank">{T['footer_col4_l1']}</a></li>
+                    <li><a href="https://www.linkedin.com/in/joseph-javier-sánchez-acuña-150410275" target="_blank">{T['footer_col4_l2']}</a></li>
+                </ul>
+            </div>
         </div>
-        <h3 style="color: white; margin-bottom: 0.5rem;">SAVA Software for Engineering</h3>
-        <p style="color: #ecf0f1; margin-bottom: 1rem;">
-            Soluciones innovadoras en desarrollo de software e inteligencia artificial
-        </p>
-        <div style="margin: 1rem 0;">
-            <a href="https://github.com/GIUSEPPESAN21" 
-               style="color: #3498db; text-decoration: none; margin: 0 1rem;">
-                GitHub
-            </a>
-            <span style="color: #95a5a6;">|</span>
-            <a href="https://www.linkedin.com/in/joseph-javier-sánchez-acuña-150410275" 
-               style="color: #3498db; text-decoration: none; margin: 0 1rem;">
-                LinkedIn
-            </a>
+        <div class="footer-copyright">
+            <p>{T['footer_copyright']}</p>
         </div>
-        <hr style="border-color: #7f8c8d; margin: 1.5rem 0;">
-        <p style="color: #95a5a6; font-size: 0.9rem; margin: 0;">
-            © 2025 SAVA Software for Engineering. Todos los derechos reservados.
-        </p>
-        <p style="color: #95a5a6; font-size: 0.8rem; margin-top: 0.5rem;">
-            Desarrollado con ❤️ por el equipo de SAVA
-        </p>
     </div>
     """
     st.markdown(footer_html, unsafe_allow_html=True)
@@ -787,43 +1039,49 @@ def render_footer():
 
 def main():
     """Main application function."""
-    # Render header
+    
+    # Render header (siempre visible)
     render_header()
     
-    # Render sidebar
-    render_sidebar()
-    
-    # Update cart count
+    # Actualizar contador de carrito
     update_cart_count()
     
-    # Handle product detail page (check if product selected)
-    if st.session_state.selected_product_id:
-        render_product_detail_page()
-        return
+    # Contenedor principal para el contenido de la página
+    with st.container():
+        
+        # MEJORA: Lógica de layout
+        # Solo mostrar sidebar en 'products'
+        if st.session_state.page == 'products':
+            # render_sidebar() es llamado dentro de render_products_page()
+            pass
+        
+        # Handle product detail page (check if product selected)
+        if st.session_state.selected_product_id:
+            render_product_detail_page()
+        else:
+            # Route to appropriate page
+            page = st.session_state.page
+            
+            if page == 'home':
+                render_home_page()
+            elif page == 'products':
+                render_products_page()
+            elif page == 'cart':
+                render_cart_page()
+            elif page == 'checkout':
+                render_checkout_page()
+            elif page == 'auth':
+                render_auth_page()
+            elif page == 'account':
+                render_account_page()
+            elif page == 'orders':
+                render_orders_page()
+            elif page == 'about':
+                render_about_page()
+            else:
+                render_home_page()
     
-    # Route to appropriate page
-    page = st.session_state.page
-    
-    if page == 'home':
-        render_home_page()
-    elif page == 'products':
-        render_products_page()
-    elif page == 'cart':
-        render_cart_page()
-    elif page == 'checkout':
-        render_checkout_page()
-    elif page == 'auth':
-        render_auth_page()
-    elif page == 'account':
-        render_account_page()
-    elif page == 'orders':
-        render_orders_page()
-    elif page == 'about':
-        render_about_page()
-    else:
-        render_home_page()
-    
-    # Render footer
+    # Render footer (siempre visible)
     render_footer()
 
 
