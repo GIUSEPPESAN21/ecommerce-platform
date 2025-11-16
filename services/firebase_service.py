@@ -33,25 +33,62 @@ class FirebaseService:
         try:
             from config.settings import get_firebase_credentials
             
+            # Check if Firebase is already initialized
             try:
                 firebase_admin.get_app()
+                if 'firebase_initialized' not in st.session_state:
+                    st.session_state.firebase_initialized = True
                 return
             except ValueError:
-                pass
+                pass  # Firebase not initialized yet, continue
             
+            # Get credentials
             cred_dict = get_firebase_credentials()
             
             if not cred_dict:
-                raise ValueError("Firebase credentials not found in Streamlit secrets")
+                error_msg = "Firebase credentials not found in Streamlit secrets. Please configure them in Streamlit Cloud settings."
+                if 'firebase_error_shown' not in st.session_state:
+                    st.error(error_msg)
+                    st.session_state.firebase_error_shown = True
+                raise ValueError(error_msg)
             
+            # Validate that credentials have required fields
+            required_fields = ['type', 'project_id', 'private_key', 'client_email']
+            missing_fields = [field for field in required_fields if field not in cred_dict]
+            
+            if missing_fields:
+                error_msg = f"Firebase credentials missing required fields: {', '.join(missing_fields)}"
+                if 'firebase_error_shown' not in st.session_state:
+                    st.error(error_msg)
+                    st.session_state.firebase_error_shown = True
+                raise ValueError(error_msg)
+            
+            # Ensure type field is set correctly
+            if cred_dict.get('type') != 'service_account':
+                cred_dict['type'] = 'service_account'
+            
+            # Initialize Firebase
             cred = credentials.Certificate(cred_dict)
             firebase_admin.initialize_app(cred)
             
             st.session_state.firebase_initialized = True
+            if 'firebase_error_shown' in st.session_state:
+                del st.session_state.firebase_error_shown
             
+        except ValueError as e:
+            # Don't show error multiple times
+            if 'firebase_error_shown' not in st.session_state:
+                st.error(f"Error initializing Firebase: {str(e)}")
+                st.session_state.firebase_error_shown = True
+            # Don't raise, allow app to continue (but Firebase features won't work)
+            return
         except Exception as e:
-            st.error(f"Error initializing Firebase: {str(e)}")
-            raise
+            error_msg = f"Error initializing Firebase: {str(e)}"
+            if 'firebase_error_shown' not in st.session_state:
+                st.error(error_msg)
+                st.session_state.firebase_error_shown = True
+            # Don't raise, allow app to continue
+            return
     
     def create_user(self, email: str, password: str, display_name: str = None) -> Optional[Dict[str, Any]]:
         """Create a new user account."""
@@ -94,12 +131,21 @@ class FirebaseService:
     
     def get_db(self):
         """Get Firestore database client."""
-        return firestore.client()
+        try:
+            # Verify Firebase is initialized
+            firebase_admin.get_app()
+            return firestore.client()
+        except ValueError:
+            st.error("Firebase is not initialized. Please check your credentials.")
+            return None
     
     def create_product(self, product_data: Dict[str, Any]) -> Optional[str]:
         """Create a new product in Firestore."""
         try:
             db = self.get_db()
+            if db is None:
+                return None
+            
             product_data['created_at'] = datetime.now()
             product_data['updated_at'] = datetime.now()
             doc_ref = db.collection('products').add(product_data)
@@ -113,6 +159,9 @@ class FirebaseService:
         """Get products from Firestore with optional filtering."""
         try:
             db = self.get_db()
+            if db is None:
+                return []
+            
             query = db.collection('products').where('active', '==', True)
             
             if category:
@@ -143,6 +192,9 @@ class FirebaseService:
         """Get a single product by ID."""
         try:
             db = self.get_db()
+            if db is None:
+                return None
+            
             doc = db.collection('products').document(product_id).get()
             
             if doc.exists:
@@ -158,6 +210,9 @@ class FirebaseService:
         """Get all available product categories."""
         try:
             db = self.get_db()
+            if db is None:
+                return []
+            
             docs = db.collection('products').stream()
             
             categories = set()
@@ -175,6 +230,9 @@ class FirebaseService:
         """Get user's shopping cart."""
         try:
             db = self.get_db()
+            if db is None:
+                return []
+            
             user_doc = db.collection('users').document(user_id).get()
             
             if user_doc.exists:
@@ -189,6 +247,9 @@ class FirebaseService:
         """Add item to user's cart."""
         try:
             db = self.get_db()
+            if db is None:
+                return False
+            
             user_ref = db.collection('users').document(user_id)
             
             user_doc = user_ref.get()
@@ -226,6 +287,9 @@ class FirebaseService:
         """Update cart item quantity."""
         try:
             db = self.get_db()
+            if db is None:
+                return False
+            
             user_ref = db.collection('users').document(user_id)
             
             user_doc = user_ref.get()
@@ -256,6 +320,9 @@ class FirebaseService:
         """Clear user's cart."""
         try:
             db = self.get_db()
+            if db is None:
+                return False
+            
             db.collection('users').document(user_id).update({
                 'cart': [],
                 'updated_at': datetime.now()
@@ -269,6 +336,8 @@ class FirebaseService:
         """Create a new order."""
         try:
             db = self.get_db()
+            if db is None:
+                return None
             
             order_data['user_id'] = user_id
             order_data['status'] = 'pending'
@@ -297,6 +366,9 @@ class FirebaseService:
         """Get user's orders."""
         try:
             db = self.get_db()
+            if db is None:
+                return []
+            
             user_doc = db.collection('users').document(user_id).get()
             
             if not user_doc.exists:
