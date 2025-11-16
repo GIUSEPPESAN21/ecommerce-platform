@@ -1,3 +1,4 @@
+[README.md](https://github.com/user-attachments/files/23570727/README.md)
 # E-Commerce Platform
 
 A professional e-commerce platform built with Streamlit, Firebase, and Python. Inspired by MercadoLibre, Amazon, and Temu.
@@ -57,6 +58,13 @@ pip install -r requirements.txt
    - Click "Generate New Private Key"
    - Save the JSON file (DO NOT commit it to Git)
 
+4. Get your Firebase Web API Key (required for authentication):
+   - Go to Firebase Console → Project Settings → General
+   - Scroll down to "Your apps" section
+   - If you don't have a web app, click "Add app" and select Web (</>) icon
+   - Copy the "Web API Key" (also called "API Key" or "Browser Key")
+   - This key is safe to use in client-side applications
+
 ### Streamlit Cloud Deployment
 
 1. Push your code to GitHub
@@ -86,9 +94,14 @@ token_uri = "https://oauth2.googleapis.com/token"
 auth_provider_x509_cert_url = "https://www.googleapis.com/oauth2/v1/certs"
 client_x509_cert_url = "https://www.googleapis.com/robot/v1/metadata/x509/..."
 
+# Firebase Web API Key (required for authentication)
+firebase_api_key = "your-firebase-web-api-key"
+
 # Gemini API Key (optional)
 [gemini]
 api_key = "your-gemini-api-key"
+# OR use this format:
+GEMINI_API_KEY = "your-gemini-api-key"
 ```
 
 ### Local Development
