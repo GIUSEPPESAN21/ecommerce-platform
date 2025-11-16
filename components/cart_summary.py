@@ -32,23 +32,26 @@ def render_cart_summary(cart_items: List[Dict[str, Any]]):
                 st.write(format_currency(item.get('price', 0)))
             
             with col3:
+                # Create callback with closure to capture item and user info
+                # The callback receives the new value as first argument automatically
+                product_id = item['product_id']  # Capture for closure
+                user_id = st.session_state.user['uid']  # Capture for closure
+                
+                def update_quantity(new_quantity: int):
+                    """Callback to update cart item quantity."""
+                    from services.firebase_service import FirebaseService
+                    firebase = FirebaseService()
+                    firebase.update_cart_item(user_id, product_id, int(new_quantity))
+                    st.rerun()
+                
                 quantity = st.number_input(
                     "Qty",
                     min_value=1,
                     max_value=99,
                     value=item.get('quantity', 1),
-                    key=f"cart_qty_{i}"
+                    key=f"cart_qty_{i}",
+                    on_change=update_quantity
                 )
-                
-                if quantity != item.get('quantity', 1):
-                    from services.firebase_service import FirebaseService
-                    firebase = FirebaseService()
-                    firebase.update_cart_item(
-                        st.session_state.user['uid'],
-                        item['product_id'],
-                        quantity
-                    )
-                    st.rerun()
             
             with col4:
                 item_total = item.get('price', 0) * item.get('quantity', 1)
