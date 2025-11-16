@@ -25,8 +25,25 @@ def render_login_form():
                 st.error(email_error)
                 return
             
-            st.info("🔐 Login functionality requires Firebase Auth client SDK integration.")
-            st.info("For full authentication, integrate Firebase Auth JavaScript SDK with Streamlit components or use Pyrebase4.")
+            # Authenticate using Firebase Auth REST API
+            from services.auth_service import AuthService
+            
+            with st.spinner("Signing in..."):
+                user_data = AuthService.sign_in(email, password)
+            
+            if user_data:
+                # Store user in session state
+                st.session_state.user = {
+                    'uid': user_data['uid'],
+                    'email': user_data['email'],
+                    'display_name': user_data['display_name']
+                }
+                st.session_state.id_token = user_data.get('idToken')
+                st.session_state.refresh_token = user_data.get('refreshToken')
+                
+                st.success(f"Welcome back, {user_data['display_name']}!")
+                st.balloons()
+                st.rerun()
 
 
 def render_register_form():
@@ -91,15 +108,23 @@ def render_register_form():
             
             display_name = f"{first_name} {last_name}"
             
-            from services.firebase_service import FirebaseService
-            firebase = FirebaseService()
+            # Register using Firebase Auth REST API
+            from services.auth_service import AuthService
             
-            user = firebase.create_user(email, password, display_name)
+            with st.spinner("Creating account..."):
+                user_data = AuthService.sign_up(email, password, display_name)
             
-            if user:
-                st.success("Account created successfully! Please sign in.")
-                st.session_state.auth_tab = 'login'
+            if user_data:
+                # Store user in session state and auto-login
+                st.session_state.user = {
+                    'uid': user_data['uid'],
+                    'email': user_data['email'],
+                    'display_name': user_data['display_name']
+                }
+                st.session_state.id_token = user_data.get('idToken')
+                st.session_state.refresh_token = user_data.get('refreshToken')
+                
+                st.success(f"Account created successfully! Welcome, {display_name}!")
+                st.balloons()
                 st.rerun()
-            else:
-                st.error("Failed to create account. Email may already be in use.")
 
