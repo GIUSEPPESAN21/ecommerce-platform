@@ -1,0 +1,32 @@
+﻿"""Application settings and configuration management."""
+import streamlit as st
+from typing import Dict, Any, Optional
+
+def get_firebase_credentials() -> Optional[Dict[str, Any]]:
+    try:
+        if 'firebase_credentials' in st.secrets:
+            return dict(st.secrets['firebase_credentials'])
+        return None
+    except Exception as e:
+        st.error(f"Error loading Firebase credentials: {str(e)}")
+        return None
+
+def get_gemini_api_key() -> Optional[str]:
+    try:
+        if 'gemini' in st.secrets and 'api_key' in st.secrets['gemini']:
+            return st.secrets['gemini']['api_key']
+        return None
+    except Exception as e:
+        st.error(f"Error loading Gemini API key: {str(e)}")
+        return None
+
+def get_app_config() -> Dict[str, Any]:
+    return {
+        'app_name': 'E-Commerce Platform',
+        'currency': 'USD',
+        'currency_symbol': '$',
+        'max_cart_items': 50,
+        'max_product_images': 5,
+        'products_per_page': 12,
+        'storage_bucket': None,
+    }
