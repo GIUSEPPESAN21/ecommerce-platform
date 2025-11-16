@@ -15,28 +15,55 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for professional look
+# Custom CSS for professional and modern look
 st.markdown("""
     <style>
+        /* Main container */
         .main {
-            padding-top: 2rem;
+            padding-top: 1rem;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
-        .stButton>button {
-            width: 100%;
-        }
-        .product-card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 0.5rem 0;
-        }
-        .header {
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            padding: 1rem;
-            border-radius: 10px;
-            color: white;
+        
+        /* Header styling */
+        .header-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 2rem;
         }
+        
+        /* Buttons */
+        .stButton>button {
+            width: 100%;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .stButton>button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Product cards */
+        .product-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 0.5rem 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .product-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        /* Cart badge */
         .cart-badge {
             background: #ff4444;
             color: white;
@@ -44,6 +71,89 @@ st.markdown("""
             padding: 0.2rem 0.5rem;
             font-size: 0.8rem;
             margin-left: 0.5rem;
+            font-weight: bold;
+        }
+        
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 2rem;
+            margin-top: 4rem;
+            border-radius: 15px 15px 0 0;
+            text-align: center;
+        }
+        
+        .footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Company info section */
+        .company-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin: 2rem 0;
+        }
+        
+        /* Founder card */
+        .founder-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+        
+        /* Hide Streamlit default elements */
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        header {visibility: hidden;}
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+        
+        /* Logo styling */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        /* Info boxes */
+        .stInfo {
+            border-left: 4px solid #667eea;
+        }
+        
+        /* Success messages */
+        .stSuccess {
+            border-left: 4px solid #28a745;
+        }
+        
+        /* Error messages */
+        .stError {
+            border-left: 4px solid #dc3545;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -97,10 +207,60 @@ def update_cart_count():
 
 def render_header():
     """Render application header with navigation."""
+    # Header with logo and navigation
+    col_logo, col_nav = st.columns([1, 4])
+    
+    with col_logo:
+        st.image("https://github.com/GIUSEPPESAN21/LOGO-SAVA/blob/main/LOGO.jpg?raw=true", width=120)
+    
+    with col_nav:
+        nav_cols = st.columns([2, 1, 1, 1, 1, 1])
+        
+        with nav_cols[0]:
+            st.markdown("### 🛒 E-Commerce Platform")
+            st.caption("Powered by SAVA Software")
+        
+        with nav_cols[1]:
+            if st.button("🏠 Home", use_container_width=True):
+                st.session_state.page = 'home'
+                st.rerun()
+        
+        with nav_cols[2]:
+            if st.button("📦 Products", use_container_width=True):
+                st.session_state.page = 'products'
+                st.rerun()
+        
+        with nav_cols[3]:
+            cart_text = f"🛍️ Cart"
+            if st.session_state.cart_count > 0:
+                cart_text += f" ({st.session_state.cart_count})"
+            
+            if st.button(cart_text, use_container_width=True):
+                st.session_state.page = 'cart'
+                st.rerun()
+        
+        with nav_cols[4]:
+            if st.button("ℹ️ About", use_container_width=True):
+                st.session_state.page = 'about'
+                st.rerun()
+        
+        with nav_cols[5]:
+            if st.session_state.user:
+                if st.button("👤 Account", use_container_width=True):
+                    st.session_state.page = 'account'
+                    st.rerun()
+            else:
+                if st.button("🔐 Sign In", use_container_width=True):
+                    st.session_state.page = 'auth'
+                    st.rerun()
+    
+    st.divider()
+    
+    # Old header code - keeping for reference but not used
     col1, col2, col3, col4, col5 = st.columns([2, 1, 1, 1, 1])
     
     with col1:
-        st.markdown("### ðŸ›’ E-Commerce Platform")
+        pass  # Logo now shown above
     
     with col2:
         if st.button("ðŸ  Home"):
@@ -575,6 +735,54 @@ def render_orders_page():
         st.error(f"Error loading orders: {str(e)}")
 
 
+def render_about_page():
+    """Render about page with company and team information."""
+    from components.about import render_about_content
+    render_about_content()
+
+
+def render_footer():
+    """Render footer with company information and copyright."""
+    st.markdown("---")
+    
+    footer_html = """
+    <div style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); 
+                padding: 2rem; 
+                border-radius: 15px; 
+                margin-top: 3rem;
+                text-align: center;
+                color: white;">
+        <div style="margin-bottom: 1rem;">
+            <img src="https://github.com/GIUSEPPESAN21/LOGO-SAVA/blob/main/LOGO.jpg?raw=true" 
+                 style="width: 100px; margin-bottom: 1rem;">
+        </div>
+        <h3 style="color: white; margin-bottom: 0.5rem;">SAVA Software for Engineering</h3>
+        <p style="color: #ecf0f1; margin-bottom: 1rem;">
+            Soluciones innovadoras en desarrollo de software e inteligencia artificial
+        </p>
+        <div style="margin: 1rem 0;">
+            <a href="https://github.com/GIUSEPPESAN21" 
+               style="color: #3498db; text-decoration: none; margin: 0 1rem;">
+                GitHub
+            </a>
+            <span style="color: #95a5a6;">|</span>
+            <a href="https://www.linkedin.com/in/joseph-javier-sánchez-acuña-150410275" 
+               style="color: #3498db; text-decoration: none; margin: 0 1rem;">
+                LinkedIn
+            </a>
+        </div>
+        <hr style="border-color: #7f8c8d; margin: 1.5rem 0;">
+        <p style="color: #95a5a6; font-size: 0.9rem; margin: 0;">
+            © 2025 SAVA Software for Engineering. Todos los derechos reservados.
+        </p>
+        <p style="color: #95a5a6; font-size: 0.8rem; margin-top: 0.5rem;">
+            Desarrollado con ❤️ por el equipo de SAVA
+        </p>
+    </div>
+    """
+    st.markdown(footer_html, unsafe_allow_html=True)
+
+
 # ==================== Main Application ====================
 
 def main():
@@ -610,8 +818,13 @@ def main():
         render_account_page()
     elif page == 'orders':
         render_orders_page()
+    elif page == 'about':
+        render_about_page()
     else:
         render_home_page()
+    
+    # Render footer
+    render_footer()
 
 
 if __name__ == "__main__":
