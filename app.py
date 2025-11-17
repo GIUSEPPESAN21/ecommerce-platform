@@ -45,7 +45,7 @@ st.markdown("""
             left: 0;
             right: 0;
             z-index: 999;
-            background-color: #FFF159; /* Acento MercadoLibre */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Paleta SAVA (del archivo guía) */
             padding: 1rem 2rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Sombra más sutil */
             border-bottom: 1px solid #E0E0E0;
@@ -68,13 +68,13 @@ st.markdown("""
             background: none;
             border: none;
             padding: 0;
-            color: #333333;
+            color: #FFFFFF; /* Texto blanco en header */
             font-size: 1.1rem; /* Ajustado */
             font-weight: 700;
             transition: color 0.2s;
         }
         .header-logo-container .stButton>button:hover {
-            color: #667eea; /* Color SAVA */
+            color: #F0F0F0; /* Aclarado leve */
             transform: none;
             box-shadow: none;
         }
@@ -105,7 +105,7 @@ st.markdown("""
         .header-nav-links .stButton>button {
             background: none;
             border: none;
-            color: #333333;
+            color: #FFFFFF; /* Texto blanco en header */
             font-weight: 400;
             padding: 0.5rem;
             transition: all 0.2s;
@@ -113,10 +113,10 @@ st.markdown("""
         }
         
         .header-nav-links .stButton>button:hover {
-            color: #333333;
-            background-color: rgba(0, 0, 0, 0.05);
-            transform: none;
-            box-shadow: none;
+            color: #FFFFFF;
+            background-color: rgba(255, 255, 255, 0.1); /* Efecto hover sutil */
+            transform: translateY(-2px); /* Animación de botón */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Animación de botón */
         }
 
         /* MEJORA: Estilo para el SelectBox de Idioma */
@@ -125,13 +125,18 @@ st.markdown("""
         }
         .header-nav-links .stSelectbox div[data-baseweb="select"] {
             background-color: transparent;
-            border: 1px solid #AAAAAA;
+            border: 1px solid #FFFFFF; /* Borde blanco */
             border-radius: 6px;
             font-size: 0.9rem;
             font-weight: 600;
+            color: #FFFFFF; /* Texto blanco */
         }
         .header-nav-links .stSelectbox div[data-baseweb="select"] > div {
             padding: 2px 6px; /* Más pequeño */
+        }
+        /* MEJORA: Color del icono del selectbox */
+        .header-nav-links .stSelectbox svg {
+            fill: #FFFFFF;
         }
 
         .cart-button-wrapper {
@@ -198,6 +203,8 @@ st.markdown("""
         }
         .stButton>button[kind="primary"]:hover {
             background-color: #5a6ec0;
+            transform: translateY(-2px); /* Animación de botón */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Animación de botón */
         }
         
         /* Botón Secundario (Ver Detalles) */
@@ -207,11 +214,13 @@ st.markdown("""
         }
         .stButton>button[kind="secondary"]:hover {
             background-color: #d5d5d5;
+            transform: translateY(-2px); /* Animación de botón */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Animación de botón */
         }
         
         /* --- 5. Footer --- */
         .app-footer {
-            background: #333333;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); /* Paleta SAVA (del archivo guía) */
             color: #FFFFFF;
             padding: 3rem 2rem;
             margin-top: 4rem;
@@ -228,7 +237,7 @@ st.markdown("""
             font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 1rem;
-            color: #FFF159; /* Acento */
+            color: #667eea; /* Acento SAVA */
         }
         .footer-col ul {
             list-style: none;
@@ -243,7 +252,7 @@ st.markdown("""
             transition: color 0.2s;
         }
         .footer-col a:hover {
-            color: #FFF159;
+            color: #667eea; /* Acento SAVA */
             text-decoration: underline;
         }
         .footer-copyright {
@@ -264,17 +273,17 @@ st.markdown("""
 TEXTS = {
     'ES': {
         'search_placeholder': "Buscar productos, marcas y más...",
-        'nav_categories': "Categorías",
-        'nav_deals': "Ofertas",
-        'nav_history': "Historial",
-        'nav_sell': "Vender",
+        'nav_categories': "🗂️ Categorías",
+        'nav_deals': "🔥 Ofertas",
+        'nav_history': "📜 Historial",
+        'nav_sell': "💰 Vender",
         'user_welcome': "Bienvenido",
-        'user_account': "Mi Cuenta",
-        'user_orders': "Mis Compras",
-        'user_logout': "Cerrar Sesión",
+        'user_account': "👤 Mi Cuenta",
+        'user_orders': "📦 Mis Compras",
+        'user_logout': "🚪 Cerrar Sesión",
         'nav_signin': "Ingresa",
         'nav_signup': "Crea tu cuenta",
-        'nav_cart': "Carrito",
+        'nav_cart': "🛒 Carrito",
         'page_home_title': "Bienvenido a SAVA E-Commerce",
         'page_home_subtitle': "Descubre productos increíbles a precios imbatibles.",
         'page_featured_products': "Productos Destacados",
@@ -283,7 +292,7 @@ TEXTS = {
         'page_checkout': "Finalizar Compra",
         'page_account': "Mi Cuenta",
         'page_orders': "Mis Pedidos",
-        'page_about': "Acerca de Nosotros",
+        'page_about': "ℹ️ Acerca de Nosotros",
         'filter_title': "Filtrar por",
         'filter_categories': "Categorías",
         'filter_all_categories': "Todas las Categorías",
@@ -318,17 +327,17 @@ TEXTS = {
     },
     'EN': {
         'search_placeholder': "Search products, brands, and more...",
-        'nav_categories': "Categories",
-        'nav_deals': "Deals",
-        'nav_history': "History",
-        'nav_sell': "Sell",
+        'nav_categories': "🗂️ Categories",
+        'nav_deals': "🔥 Deals",
+        'nav_history': "📜 History",
+        'nav_sell': "💰 Sell",
         'user_welcome': "Welcome",
-        'user_account': "My Account",
-        'user_orders': "My Purchases",
-        'user_logout': "Sign Out",
+        'user_account': "👤 My Account",
+        'user_orders': "📦 My Purchases",
+        'user_logout': "🚪 Sign Out",
         'nav_signin': "Sign In",
         'nav_signup': "Create your account",
-        'nav_cart': "Cart",
+        'nav_cart': "🛒 Cart",
         'page_home_title': "Welcome to SAVA E-Commerce",
         'page_home_subtitle': "Discover amazing products at unbeatable prices.",
         'page_featured_products': "Featured Products",
@@ -337,7 +346,7 @@ TEXTS = {
         'page_checkout': "Checkout",
         'page_account': "My Account",
         'page_orders': "My Orders",
-        'page_about': "About Us",
+        'page_about': "ℹ️ About Us",
         'filter_title': "Filter by",
         'filter_categories': "Categories",
         'filter_all_categories': "All Categories",
@@ -727,9 +736,9 @@ def render_product_detail_page():
                 stock = product.get('stock', 0)
                 in_stock = stock > 0
                 if in_stock:
-                    st.success(f"✓ {T['in_stock']} ({stock} available)")
+                    st.success(f"✅ {T['in_stock']} ({stock} available)")
                 else:
-                    st.error(f"✗ {T['out_of_stock']}")
+                    st.error(f"❌ {T['out_of_stock']}")
                 
                 if st.session_state.user:
                     if in_stock:
