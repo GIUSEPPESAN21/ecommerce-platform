@@ -1248,7 +1248,14 @@ def render_footer():
                     <h4>{T['footer_about']}</h4>
                     <ul>
                         <li><a href="#">{T['footer_about_us']}</a></li>
-                        <li><a href="#">{TÃÂ¡['footer_careers']}</a></li>
+                        <li><a href="#">{T['footer_careers']}</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>{T['footer_payment']}</h4>
+                    <ul>
+                        <li>{T['footer_cards']}</li>
+                        <li>{T['footer_paypal']}</li>
                     </ul>
                 </div>
                 <div class="footer-col">
