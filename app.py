@@ -2,12 +2,11 @@
 E-Commerce Platform - Main Application
 SAVA SOFTWARE FOR ENGINEERING
 
-🎨 REDISEÑO UX/UI PROFESIONAL v3.0
-- Interfaz moderna bilingüe (ES/EN)
-- Sistema de diseño coherente y profesional
-- Microinteracciones y feedback visual
-- Responsive design optimizado
-- Accesibilidad mejorada
+🎨 REDISEÑO UX/UI v4.0 (Estilo Mercado Libre)
+- Header inspirado en Mercado Libre (amarillo)
+- Forzado de modo claro para corregir bugs de botones
+- Paleta de colores SAVA como acento principal
+- Diseño de tarjetas y layout mejorado
 """
 import streamlit as st
 from typing import Optional, Dict, Any
@@ -20,7 +19,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- SISTEMA DE DISEÑO PROFESIONAL ---
+# --- SISTEMA DE DISEÑO PROFESIONAL (SAVA + ML) ---
 st.markdown("""
     <style>
         /* ========================================
@@ -29,14 +28,17 @@ st.markdown("""
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
         :root {
-            /* Colores principales SAVA */
+            /* Color principal Mercado Libre */
+            --ml-yellow: #FFF159;
+            
+            /* Colores principales SAVA (para acentos) */
             --sava-primary: #0D9488;
             --sava-primary-dark: #0F766E;
             --sava-primary-light: #14B8A6;
             
-            /* Escala de grises */
+            /* Escala de grises (Modo Claro) */
             --gray-50: #F9FAFB;
-            --gray-100: #F3F4F6;
+            --gray-100: #F3F4F6; /* Fondo de página principal */
             --gray-200: #E5E7EB;
             --gray-300: #D1D5DB;
             --gray-400: #9CA3AF;
@@ -73,21 +75,28 @@ st.markdown("""
             --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
         
-        /* Reset y base */
+        /* Reset y base (FORZAR MODO CLARO) */
         html, body, [class*="st-"] {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             color: var(--gray-900);
-            background-color: var(--gray-50);
+            background-color: var(--gray-100) !important; /* Fondo gris claro de e-commerce */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        
+
+        /* Contenedor principal de la app (fondo blanco) */
+        .main .block-container {
+             background-color: white;
+             padding-top: 2rem !important; /* Espacio para el contenido */
+             padding-bottom: 2rem !important;
+        }
+
         /* Ocultar elementos Streamlit */
         #MainMenu, footer, header {visibility: hidden;}
         .stDeployButton {display: none;}
         
         /* ========================================
-           2. HEADER PROFESIONAL
+           2. HEADER ESTILO MERCADO LIBRE
         ======================================== */
         .sava-header {
             position: fixed;
@@ -95,9 +104,10 @@ st.markdown("""
             left: 0;
             right: 0;
             z-index: 1000;
-            background: white;
-            border-bottom: 1px solid var(--gray-200);
+            background: var(--ml-yellow);
+            border-bottom: none;
             transition: box-shadow 0.3s ease;
+            box-shadow: var(--shadow-sm); /* Sombra por defecto */
         }
         
         .sava-header.scrolled {
@@ -105,7 +115,7 @@ st.markdown("""
         }
         
         .header-content {
-            max-width: 1400px;
+            max-width: 1200px; /* Ancho fijo como ML */
             margin: 0 auto;
             padding: var(--space-md) var(--space-xl);
             display: flex;
@@ -134,28 +144,29 @@ st.markdown("""
             letter-spacing: -0.02em;
         }
         
-        /* Búsqueda */
+        /* Búsqueda (Estilo ML) */
         .header-search {
             flex: 1;
-            max-width: 600px;
+            max-width: 700px;
         }
         
         .header-search .stTextInput > div > div > input {
-            border: 2px solid var(--gray-200);
-            border-radius: var(--radius-lg);
-            padding: 0.625rem 1rem;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1rem; /* Más alto */
             font-size: 0.9375rem;
             transition: all 0.2s ease;
-            background: var(--gray-50);
+            background: white;
+            box-shadow: var(--shadow-sm);
         }
         
         .header-search .stTextInput > div > div > input:focus {
-            border-color: var(--sava-primary);
+            border: 1px solid var(--sava-primary); /* Foco con color SAVA */
             background: white;
             box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
         }
         
-        /* Navegación */
+        /* Navegación (Estilo ML) */
         .header-nav {
             display: flex;
             align-items: center;
@@ -167,22 +178,22 @@ st.markdown("""
         .header-nav .stButton > button {
             background: transparent;
             border: none;
-            color: var(--gray-700);
-            font-size: 0.9375rem;
-            font-weight: 500;
-            padding: 0.5rem 0.875rem;
+            color: var(--gray-800); /* Texto oscuro sobre amarillo */
+            font-size: 0.875rem; /* Más pequeño */
+            font-weight: 400; /* Menos grueso */
+            padding: 0.5rem 0.75rem;
             border-radius: var(--radius-md);
             transition: all 0.15s ease;
             white-space: nowrap;
         }
         
         .header-nav .stButton > button:hover {
-            background: var(--gray-100);
-            color: var(--sava-primary);
-            transform: translateY(-1px);
+            background: rgba(0, 0, 0, 0.04); /* Overlay sutil */
+            color: var(--gray-900);
+            transform: none;
         }
         
-        /* Selector de idioma mejorado */
+        /* Selector de idioma */
         .lang-selector {
             position: relative;
         }
@@ -192,15 +203,17 @@ st.markdown("""
         }
         
         .lang-selector [data-baseweb="select"] {
-            background: var(--gray-100);
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius-md);
+            background: transparent;
+            border: none;
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: var(--gray-800);
             min-height: 36px;
         }
         
         .lang-selector [data-baseweb="select"]:hover {
-            border-color: var(--sava-primary);
-            background: white;
+            background: rgba(0, 0, 0, 0.04);
+            border-color: transparent;
         }
         
         /* Icono de carrito con badge */
@@ -233,35 +246,39 @@ st.markdown("""
             100% { transform: scale(1); }
         }
         
-        /* Popover de usuario */
+        /* Popover de usuario (Estilo ML) */
         [data-testid="stPopover"] {
             z-index: 1001;
         }
         
         [data-testid="stPopover"] > button {
-            background: var(--gray-100);
-            border: 1px solid var(--gray-300);
+            background: transparent;
+            border: none;
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: var(--gray-800);
+            padding: 0.5rem 0.75rem;
             border-radius: var(--radius-md);
-            padding: 0.5rem 1rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
         }
         
         [data-testid="stPopover"] > button:hover {
-            background: white;
-            border-color: var(--sava-primary);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-sm);
+            background: rgba(0, 0, 0, 0.04);
+            border: none;
+            transform: none;
+            box-shadow: none;
         }
         
         /* ========================================
            3. CONTENIDO PRINCIPAL
         ======================================== */
         .main .block-container {
-            max-width: 1400px;
-            padding-top: 110px;
+            max-width: 1200px; /* Ancho fijo como ML */
+            padding-top: 130px; /* Más espacio para el header fijo */
             padding-bottom: var(--space-2xl);
             animation: fade-in 0.4s ease-out;
+            background: white; /* Contenido sobre fondo blanco */
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
         }
         
         @keyframes fade-in {
@@ -283,37 +300,38 @@ st.markdown("""
         }
         
         h1 {
-            font-size: 2.5rem;
+            font-size: 2.25rem; /* Un poco más pequeño */
             margin-bottom: var(--space-lg);
         }
         
         h2 {
-            font-size: 1.875rem;
+            font-size: 1.75rem;
             margin-bottom: var(--space-md);
         }
         
         h3 {
-            font-size: 1.5rem;
+            font-size: 1.25rem; /* Más pequeño para tarjetas */
         }
         
         /* ========================================
-           4. TARJETAS DE PRODUCTO
+           4. TARJETAS DE PRODUCTO (Estilo ML)
         ======================================== */
         .product-card {
             background: white;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-lg);
+            border: none; /* Sin borde */
+            border-radius: var(--radius-md);
             padding: var(--space-md);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             height: 100%;
             display: flex;
             flex-direction: column;
+            box-shadow: var(--shadow-sm); /* Sombra sutil por defecto */
         }
         
         .product-card:hover {
-            border-color: var(--sava-primary);
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-4px);
+            border-color: transparent;
+            box-shadow: var(--shadow-lg); /* Sombra más fuerte al pasar el mouse */
+            transform: none; /* Sin movimiento vertical */
         }
         
         .product-card img {
@@ -327,7 +345,7 @@ st.markdown("""
         .product-price {
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--sava-primary);
+            color: var(--sava-primary); /* Color SAVA */
             margin: var(--space-sm) 0;
         }
         
@@ -350,12 +368,21 @@ st.markdown("""
             border: none;
             font-size: 0.9375rem;
         }
+
+        /* FIX BOTÓN: Asegurar que el texto interno sea transparente */
+        .stButton > button > div > p {
+            background-color: transparent !important;
+            color: inherit !important;
+        }
         
-        /* Botón primario */
+        /* Botón primario (Color SAVA) */
         .stButton > button[kind="primary"] {
             background: linear-gradient(135deg, var(--sava-primary) 0%, var(--sava-primary-dark) 100%);
             color: white;
             box-shadow: 0 2px 4px rgba(13, 148, 136, 0.2);
+        }
+        .stButton > button[kind="primary"] > div > p {
+            color: white !important;
         }
         
         .stButton > button[kind="primary"]:hover {
@@ -374,12 +401,18 @@ st.markdown("""
             color: var(--gray-700);
             border: 2px solid var(--gray-300);
         }
+        .stButton > button[kind="secondary"] > div > p {
+            color: var(--gray-700) !important;
+        }
         
         .stButton > button[kind="secondary"]:hover {
             background: var(--gray-50);
             border-color: var(--sava-primary);
             color: var(--sava-primary);
             transform: translateY(-2px);
+        }
+        .stButton > button[kind="secondary"]:hover > div > p {
+            color: var(--sava-primary) !important;
         }
         
         /* ========================================
@@ -392,6 +425,7 @@ st.markdown("""
             border-radius: var(--radius-md);
             padding: 0.625rem;
             transition: all 0.2s ease;
+            background-color: white !important; /* Forzar fondo blanco */
         }
         
         .stTextInput > div > div > input:focus,
@@ -409,7 +443,7 @@ st.markdown("""
             border-radius: var(--radius-lg);
             padding: var(--space-lg);
             position: sticky;
-            top: 120px;
+            top: 140px; /* Ajustar por header */
         }
         
         .cart-item {
@@ -431,7 +465,7 @@ st.markdown("""
         section[data-testid="stSidebar"] {
             background: white;
             border-right: 1px solid var(--gray-200);
-            padding-top: 110px;
+            padding-top: 130px; /* Ajustar por header */
         }
         
         section[data-testid="stSidebar"] .stButton > button {
@@ -451,7 +485,7 @@ st.markdown("""
         }
         
         /* ========================================
-           9. FOOTER
+           9. FOOTER (Estilo ML - blanco)
         ======================================== */
         .sava-footer {
             background: white;
@@ -461,7 +495,7 @@ st.markdown("""
         }
         
         .footer-content {
-            max-width: 1400px;
+            max-width: 1200px; /* Ancho fijo */
             margin: 0 auto;
         }
         
@@ -578,7 +612,8 @@ st.markdown("""
             }
             
             .main .block-container {
-                padding-top: 140px;
+                padding-top: 160px; /* Más espacio para header en móvil */
+                border-radius: 0;
             }
         }
         
@@ -882,14 +917,14 @@ def render_sidebar():
 
 # --- PÁGINAS ---
 def render_home_page():
-    st.markdown(f"# {T['page_home_title']}")
-    st.markdown(f"### {T['page_home_subtitle']}")
+    # st.markdown(f"# {T['page_home_title']}")
+    # st.markdown(f"### {T['page_home_subtitle']}")
     
     # Banner promocional
     st.markdown("""
         <div style="background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%); 
                     padding: 3rem; border-radius: 16px; text-align: center; 
-                    color: white; margin: 2rem 0;">
+                    color: white; margin: 0 0 2rem 0;">
             <h2 style="margin: 0; font-size: 2rem;">🚚 Envío Gratis</h2>
             <p style="margin: 0.5rem 0 0; font-size: 1.1rem;">En tu primera compra</p>
         </div>
@@ -1213,14 +1248,14 @@ def render_footer():
                     <h4>{T['footer_about']}</h4>
                     <ul>
                         <li><a href="#">{T['footer_about_us']}</a></li>
-                        <li><a href="#">{T['footer_careers']}</a></li>
+                        <li><a href="#">{TÃÂ¡['footer_careers']}</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
                     <h4>{T['footer_payment']}</h4>
                     <ul>
                         <li>{T['footer_cards']}</li>
-                        <li>{T['footer_paypal']}</li>
+                        <li>{TÃÂ¡['footer_paypal']}</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -1243,6 +1278,9 @@ def render_footer():
 def main():
     render_header()
     update_cart_count()
+    
+    # El CSS ahora fuerza un fondo gris claro (#F3F4F6) para la página
+    # El contenedor principal (.main .block-container) tiene fondo blanco
     
     with st.container():
         if st.session_state.page == 'products':
