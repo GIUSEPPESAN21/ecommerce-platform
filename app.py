@@ -1259,13 +1259,6 @@ def render_footer():
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h4>{T['footer_payment']}</h4>
-                    <ul>
-                        <li>{T['footer_cards']}</li>
-                        <li>{TÃÂ¡['footer_paypal']}</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
                     <h4>{T['footer_social']}</h4>
                     <ul>
                         <li><a href="https://github.com/GIUSEPPESAN21" target="_blank">GitHub</a></li>
