@@ -2,11 +2,11 @@
 E-Commerce Platform - Main Application
 SAVA SOFTWARE FOR ENGINEERING
 
-🎨 REDISEÑO UX/UI v4.0 (Estilo Mercado Libre)
-- Header inspirado en Mercado Libre (amarillo)
-- Forzado de modo claro para corregir bugs de botones
-- Paleta de colores SAVA como acento principal
-- Diseño de tarjetas y layout mejorado
+🎨 REDISEÑO UX/UI v5.0 (Estilo Mercado Libre)
+- FIX: Header con 'display: flex' para forzar alineación horizontal.
+- FIX: Forzado de modo claro total y reglas CSS específicas
+  para eliminar el bug de "caja de texto" en TODOS los botones.
+- Paleta de colores SAVA como acento principal.
 """
 import streamlit as st
 from typing import Optional, Dict, Any
@@ -75,20 +75,36 @@ st.markdown("""
             --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
         
-        /* Reset y base (FORZAR MODO CLARO) */
+        /* ========================================
+           1.1 FORZAR MODO CLARO
+        ======================================== */
         html, body, [class*="st-"] {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            color: var(--gray-900);
+            color: var(--gray-900) !important;
             background-color: var(--gray-100) !important; /* Fondo gris claro de e-commerce */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
 
         /* Contenedor principal de la app (fondo blanco) */
-        .main .block-container {
-             background-color: white;
+        .main .block-container, section[data-testid="stSidebar"] {
+             background-color: white !important;
              padding-top: 2rem !important; /* Espacio para el contenido */
              padding-bottom: 2rem !important;
+        }
+        
+        /* Forzar texto e inputs a modo claro */
+        .stTextInput > div > div > input,
+        .stSelectbox > div > div,
+        .stNumberInput > div > div > input,
+        [data-baseweb="select"] > div {
+            background-color: white !important;
+            color: var(--gray-900) !important;
+            border-color: var(--gray-200) !important;
+        }
+        
+        h1, h2, h3, h4, h5, h6, p, li, span, div {
+             color: var(--gray-900) !important;
         }
 
         /* Ocultar elementos Streamlit */
@@ -108,10 +124,6 @@ st.markdown("""
             border-bottom: none;
             transition: box-shadow 0.3s ease;
             box-shadow: var(--shadow-sm); /* Sombra por defecto */
-        }
-        
-        .sava-header.scrolled {
-            box-shadow: var(--shadow-md);
         }
         
         .header-content {
@@ -136,14 +148,7 @@ st.markdown("""
             height: 48px;
             border-radius: var(--radius-md);
         }
-        
-        .header-brand .brand-name {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--gray-900);
-            letter-spacing: -0.02em;
-        }
-        
+                
         /* Búsqueda (Estilo ML) */
         .header-search {
             flex: 1;
@@ -156,63 +161,70 @@ st.markdown("""
             padding: 0.75rem 1rem; /* Más alto */
             font-size: 0.9375rem;
             transition: all 0.2s ease;
-            background: white;
+            background: white !important;
             box-shadow: var(--shadow-sm);
         }
         
         .header-search .stTextInput > div > div > input:focus {
             border: 1px solid var(--sava-primary); /* Foco con color SAVA */
-            background: white;
             box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
         }
         
-        /* Navegación (Contenedor para st.columns) */
+        /* ========================================
+           2.1 FIX NAVEGACIÓN HORIZONTAL (display: flex)
+        ======================================== */
         .header-nav {
             display: flex;
             align-items: center;
-            gap: var(--space-sm);
-            flex-shrink: 0;
-            width: 100%; /* Ocupa el espacio de la columna padre */
+            justify-content: flex-end; /* Alinear a la derecha */
+            gap: var(--space-xs); /* Espacio pequeño */
+            width: 100%;
         }
         
-        /* Botones de navegación (ahora dentro de st.columns) */
+        /* Contenedores de widgets (los divs hijos de header-nav) */
+        .header-nav > div {
+            flex-shrink: 0; /* No encoger */
+            flex-grow: 0;   /* No crecer */
+            max-width: 150px; /* Evitar que "Hola, Joseph" sea muy largo */
+        }
+
+        /* Ajustar anchos específicos */
+        .header-nav .lang-selector {
+            width: 80px; /* Ancho fijo para idioma */
+        }
+        .header-nav .cart-wrapper {
+            width: 70px; /* Ancho fijo para carrito */
+        }
+
+        /* Botones de navegación (Estilo ML) */
         .header-nav .stButton > button {
             background: transparent;
             border: none;
-            color: var(--gray-800); /* Texto oscuro sobre amarillo */
+            color: var(--gray-800) !important; /* Texto oscuro sobre amarillo */
             font-size: 0.875rem; /* Más pequeño */
             font-weight: 400; /* Menos grueso */
-            padding: 0.5rem 0.25rem; /* Menos padding horizontal */
+            padding: 0.5rem 0.75rem;
             border-radius: var(--radius-md);
             transition: all 0.15s ease;
             white-space: nowrap; /* Evitar que el texto se parta */
-            width: 100%; /* Ocupar columna */
+            width: 100%; /* Ocupar espacio del div padre */
         }
         
         .header-nav .stButton > button:hover {
             background: rgba(0, 0, 0, 0.04); /* Overlay sutil */
-            color: var(--gray-900);
+            color: var(--gray-900) !important;
             transform: none;
         }
         
         /* Selector de idioma */
-        .lang-selector {
-            position: relative;
-        }
-        
-        .lang-selector .stSelectbox {
-            width: 100%;
-        }
-        
         .lang-selector [data-baseweb="select"] {
             background: transparent;
             border: none;
             font-size: 0.875rem;
             font-weight: 400;
-            color: var(--gray-800);
+            color: var(--gray-800) !important;
             min-height: 38px;
-            padding-left: 0.25rem;
-            padding-right: 0.25rem;
+            padding: 0.5rem 0.25rem;
         }
         
         .lang-selector [data-baseweb="select"]:hover {
@@ -223,15 +235,14 @@ st.markdown("""
         /* Icono de carrito con badge */
         .cart-wrapper {
             position: relative;
-            width: 100%;
         }
         
         .cart-badge {
             position: absolute;
-            top: -2px;
-            right: 0px;
+            top: 2px;
+            right: 5px;
             background: var(--error);
-            color: white;
+            color: white !important;
             font-size: 0.75rem;
             font-weight: 700;
             min-width: 20px;
@@ -252,18 +263,16 @@ st.markdown("""
         }
         
         /* Popover de usuario (Estilo ML) */
-        [data-testid="stPopover"] {
-            z-index: 1001;
-            width: 100%;
+        .header-nav [data-testid="stPopover"] {
+            width: auto; /* Ancho automático */
         }
-        
-        [data-testid="stPopover"] > button {
+        .header-nav [data-testid="stPopover"] > button {
             background: transparent;
             border: none;
             font-size: 0.875rem;
             font-weight: 400;
-            color: var(--gray-800);
-            padding: 0.5rem 0.25rem;
+            color: var(--gray-800) !important;
+            padding: 0.5rem 0.75rem;
             border-radius: var(--radius-md);
             width: 100%; /* Ocupar columna */
             white-space: nowrap;
@@ -271,7 +280,7 @@ st.markdown("""
             text-overflow: ellipsis;
         }
         
-        [data-testid="stPopover"] > button:hover {
+        .header-nav [data-testid="stPopover"] > button:hover {
             background: rgba(0, 0, 0, 0.04);
             border: none;
             transform: none;
@@ -303,22 +312,14 @@ st.markdown("""
         }
         
         /* Títulos */
-        h1, h2, h3 {
-            color: var(--gray-900);
-            font-weight: 700;
-            letter-spacing: -0.02em;
-        }
-        
         h1 {
             font-size: 2.25rem; /* Un poco más pequeño */
             margin-bottom: var(--space-lg);
         }
-        
         h2 {
             font-size: 1.75rem;
             margin-bottom: var(--space-md);
         }
-        
         h3 {
             font-size: 1.25rem; /* Más pequeño para tarjetas */
         }
@@ -355,7 +356,7 @@ st.markdown("""
         .product-price {
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--sava-primary); /* Color SAVA */
+            color: var(--sava-primary) !important; /* Color SAVA */
             margin: var(--space-sm) 0;
         }
         
@@ -364,12 +365,12 @@ st.markdown("""
             align-items: center;
             gap: var(--space-xs);
             font-size: 0.875rem;
-            color: var(--gray-600);
+            color: var(--gray-600) !important;
             margin-bottom: var(--space-md);
         }
         
         /* ========================================
-           5. BOTONES
+           5. BOTONES Y FIX DE "CAJA DE TEXTO"
         ======================================== */
         .stButton > button {
             font-weight: 600;
@@ -379,16 +380,19 @@ st.markdown("""
             font-size: 0.9375rem;
         }
 
-        /* FIX BOTÓN: Asegurar que el texto interno sea transparente */
+        /* * FIX GLOBAL DEL BUG DE BOTONES (MODO OSCURO)
+         * El bug es un <p> con fondo blanco dentro del botón.
+         * Forzamos su fondo a ser transparente y heredar el color.
+        */
         .stButton > button > div > p {
-            background-color: transparent !important;
+            background: transparent !important;
             color: inherit !important;
         }
         
         /* Botón primario (Color SAVA) */
         .stButton > button[kind="primary"] {
             background: linear-gradient(135deg, var(--sava-primary) 0%, var(--sava-primary-dark) 100%);
-            color: white;
+            color: white !important;
             box-shadow: 0 2px 4px rgba(13, 148, 136, 0.2);
         }
         .stButton > button[kind="primary"] > div > p {
@@ -408,7 +412,7 @@ st.markdown("""
         /* Botón secundario */
         .stButton > button[kind="secondary"] {
             background: white;
-            color: var(--gray-700);
+            color: var(--gray-700) !important;
             border: 2px solid var(--gray-300);
         }
         .stButton > button[kind="secondary"] > div > p {
@@ -418,7 +422,7 @@ st.markdown("""
         .stButton > button[kind="secondary"]:hover {
             background: var(--gray-50);
             border-color: var(--sava-primary);
-            color: var(--sava-primary);
+            color: var(--sava-primary) !important;
             transform: translateY(-2px);
         }
         .stButton > button[kind="secondary"]:hover > div > p {
@@ -426,7 +430,7 @@ st.markdown("""
         }
         
         /* ========================================
-           6. FORMULARIOS
+           6. FORMULARIOS (Modo Claro)
         ======================================== */
         .stTextInput > div > div > input,
         .stSelectbox > div > div,
@@ -435,7 +439,6 @@ st.markdown("""
             border-radius: var(--radius-md);
             padding: 0.625rem;
             transition: all 0.2s ease;
-            background-color: white !important; /* Forzar fondo blanco */
         }
         
         .stTextInput > div > div > input:focus,
@@ -473,9 +476,8 @@ st.markdown("""
            8. SIDEBAR (solo en productos)
         ======================================== */
         section[data-testid="stSidebar"] {
-            background: white;
-            border-right: 1px solid var(--gray-200);
             padding-top: 130px; /* Ajustar por header */
+            border-right: 1px solid var(--gray-200);
         }
         
         section[data-testid="stSidebar"] .stButton > button {
@@ -483,7 +485,7 @@ st.markdown("""
             text-align: left;
             justify-content: flex-start;
             background: transparent;
-            color: var(--gray-700);
+            color: var(--gray-700) !important;
             border: 1px solid transparent;
             margin-bottom: var(--space-xs);
         }
@@ -491,7 +493,7 @@ st.markdown("""
         section[data-testid="stSidebar"] .stButton > button:hover {
             background: var(--gray-50);
             border-color: var(--sava-primary);
-            color: var(--sava-primary);
+            color: var(--sava-primary) !important;
         }
         
         /* ========================================
@@ -519,7 +521,7 @@ st.markdown("""
         .footer-col h4 {
             font-size: 1rem;
             font-weight: 600;
-            color: var(--gray-900);
+            color: var(--gray-900) !important;
             margin-bottom: var(--space-md);
         }
         
@@ -534,21 +536,21 @@ st.markdown("""
         }
         
         .footer-col a {
-            color: var(--gray-600);
+            color: var(--gray-600) !important;
             text-decoration: none;
             transition: color 0.2s ease;
             font-size: 0.9375rem;
         }
         
         .footer-col a:hover {
-            color: var(--sava-primary);
+            color: var(--sava-primary) !important;
         }
         
         .footer-bottom {
             padding-top: var(--space-lg);
             border-top: 1px solid var(--gray-200);
             text-align: center;
-            color: var(--gray-500);
+            color: var(--gray-500) !important;
             font-size: 0.875rem;
         }
         
@@ -624,15 +626,17 @@ st.markdown("""
 
         @media (max-width: 768px) {
             .header-nav {
-                gap: var(--space-xs);
+                gap: 0; /* Sin espacio en móvil, los botones controlan su padding */
             }
             
-            .header-nav .stButton > button {
-                padding: 0.5rem 0.1rem;
+            .header-nav .stButton > button,
+            .header-nav [data-testid="stPopover"] > button {
+                padding: 0.5rem 0.25rem;
                 font-size: 0.8rem; /* Aún más pequeño en móvil */
             }
              .lang-selector [data-baseweb="select"] {
                 font-size: 0.8rem;
+                padding: 0.5rem 0.1rem;
             }
             
             h1 {
@@ -821,7 +825,7 @@ def render_header():
     st.markdown('<div class="header-content">', unsafe_allow_html=True)
     
     # Columnas principales: [Logo, Búsqueda, Navegación]
-    cols = st.columns([1.5, 4, 3])
+    cols = st.columns([1.5, 4, 4]) # Dar más espacio a la navegación
     
     # Logo y marca
     with cols[0]:
@@ -850,114 +854,71 @@ def render_header():
             navigate_to('products')
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # Navegación (AHORA CON st.columns INTERNO)
+    # Navegación (AHORA CON 'display: flex' CSS)
     with cols[2]:
         st.markdown('<div class="header-nav">', unsafe_allow_html=True)
         
-        if st.session_state.user:
-            # 5 items para usuario logueado
-            nav_cols = st.columns([1.2, 1.5, 1.5, 2.2, 1.2]) 
-            
-            with nav_cols[0]:
-                st.markdown('<div class="lang-selector">', unsafe_allow_html=True)
-                lang = st.selectbox(
-                    "lang",
-                    options=['ES', 'EN'],
-                    index=0 if st.session_state.lang == 'ES' else 1,
-                    key='lang_select',
-                    label_visibility="collapsed"
-                )
-                if lang != st.session_state.lang:
-                    st.session_state.lang = lang
-                    st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
-
-            with nav_cols[1]:
-                if st.button(f"🗂️ {T['nav_categories']}", key="cat_btn", use_container_width=True):
-                    navigate_to('products')
-            
-            with nav_cols[2]:
-                if st.button(f"ℹ️ {T['nav_about']}", key="about_btn", use_container_width=True):
-                    navigate_to('about')
-
-            with nav_cols[3]:
-                with st.popover(f"👤 {T['user_welcome']}, {st.session_state.user.get('display_name', 'User').split()[0]}", use_container_width=True):
-                    st.markdown(f"**{st.session_state.user.get('display_name')}**")
-                    st.caption(st.session_state.user.get('email'))
-                    st.divider()
-                    if st.button(f"👤 {T['user_account']}", use_container_width=True):
-                        navigate_to('account')
-                    if st.button(f"📦 {T['user_orders']}", use_container_width=True):
-                        navigate_to('orders')
-                    if st.button(f"🚪 {T['user_logout']}", use_container_width=True):
-                        st.session_state.user = None
-                        st.session_state.cart_count = 0
-                        navigate_to('home')
-            
-            with nav_cols[4]:
-                st.markdown('<div class="cart-wrapper">', unsafe_allow_html=True)
-                if st.button(f"🛒 {T['nav_cart']}", key="cart_btn", use_container_width=True):
-                    navigate_to('cart')
-                if st.session_state.cart_count > 0:
-                    st.markdown(
-                        f'<div class="cart-badge">{st.session_state.cart_count}</div>',
-                        unsafe_allow_html=True
-                    )
-                st.markdown('</div>', unsafe_allow_html=True)
-
-        else:
-            # 6 items para usuario no logueado
-            nav_cols = st.columns([1.2, 1.5, 1.5, 1.2, 1.5, 1.2]) 
-
-            with nav_cols[0]:
-                st.markdown('<div class="lang-selector">', unsafe_allow_html=True)
-                lang = st.selectbox(
-                    "lang",
-                    options=['ES', 'EN'],
-                    index=0 if st.session_state.lang == 'ES' else 1,
-                    key='lang_select',
-                    label_visibility="collapsed"
-                )
-                if lang != st.session_state.lang:
-                    st.session_state.lang = lang
-                    st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
-
-            with nav_cols[1]:
-                if st.button(f"🗂️ {T['nav_categories']}", key="cat_btn", use_container_width=True):
-                    navigate_to('products')
-
-            with nav_cols[2]:
-                if st.button(f"ℹ️ {T['nav_about']}", key="about_btn", use_container_width=True):
-                    navigate_to('about')
-
-            with nav_cols[3]:
-                if st.button(T['nav_signin'], key="signin_btn", use_container_width=True):
-                    navigate_to('auth')
-
-            with nav_cols[4]:
-                if st.button(T['nav_signup'], key="signup_btn", use_container_width=True):
-                    st.session_state.auth_tab = 'register'
-                    navigate_to('auth')
-            
-            with nav_cols[5]:
-                st.markdown('<div class="cart-wrapper">', unsafe_allow_html=True)
-                if st.button(f"🛒 {T['nav_cart']}", key="cart_btn", use_container_width=True):
-                    navigate_to('cart')
-                if st.session_state.cart_count > 0:
-                    st.markdown(
-                        f'<div class="cart-badge">{st.session_state.cart_count}</div>',
-                        unsafe_allow_html=True
-                    )
-                st.markdown('</div>', unsafe_allow_html=True)
-        
+        # Idioma
+        st.markdown('<div class="lang-selector">', unsafe_allow_html=True)
+        lang = st.selectbox(
+            "lang",
+            options=['ES', 'EN'],
+            index=0 if st.session_state.lang == 'ES' else 1,
+            key='lang_select',
+            label_visibility="collapsed"
+        )
+        if lang != st.session_state.lang:
+            st.session_state.lang = lang
+            st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
+
+        # Categorías
+        if st.button(f"🗂️ {T['nav_categories']}", key="cat_btn"):
+            navigate_to('products')
+        
+        # About
+        if st.button(f"ℹ️ {T['nav_about']}", key="about_btn"):
+            navigate_to('about')
+
+        if st.session_state.user:
+            # Usuario Logueado
+            with st.popover(f"👤 {T['user_welcome']}, {st.session_state.user.get('display_name', 'User').split()[0]}"):
+                st.markdown(f"**{st.session_state.user.get('display_name')}**")
+                st.caption(st.session_state.user.get('email'))
+                st.divider()
+                if st.button(f"👤 {T['user_account']}", use_container_width=True):
+                    navigate_to('account')
+                if st.button(f"📦 {T['user_orders']}", use_container_width=True):
+                    navigate_to('orders')
+                if st.button(f"🚪 {T['user_logout']}", use_container_width=True):
+                    st.session_state.user = None
+                    st.session_state.cart_count = 0
+                    navigate_to('home')
+        else:
+            # Usuario No Logueado
+            if st.button(T['nav_signin'], key="signin_btn"):
+                navigate_to('auth')
+            if st.button(T['nav_signup'], key="signup_btn"):
+                st.session_state.auth_tab = 'register'
+                navigate_to('auth')
+        
+        # Carrito
+        st.markdown('<div class="cart-wrapper">', unsafe_allow_html=True)
+        if st.button(f"🛒 {T['nav_cart']}", key="cart_btn"):
+            navigate_to('cart')
+        if st.session_state.cart_count > 0:
+            st.markdown(
+                f'<div class="cart-badge">{st.session_state.cart_count}</div>',
+                unsafe_allow_html=True
+            )
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True) # Cierre de .header-nav
     
-    st.markdown('</div></div>', unsafe_allow_html=True)
+    st.markdown('</div></div>', unsafe_allow_html=True) # Cierre de .header-content y .sava-header
 
 # --- SIDEBAR (solo productos) ---
 def render_sidebar():
-# ... (código existente sin cambios) ...
     with st.sidebar:
         st.title(f"🔍 {T['filter_title']}")
         st.divider()
@@ -986,16 +947,13 @@ def render_sidebar():
 
 # --- PÁGINAS ---
 def render_home_page():
-    # st.markdown(f"# {T['page_home_title']}") # Títulos opcionales, ML no los usa
-    # st.markdown(f"### {T['page_home_subtitle']}")
-    
     # Banner promocional
     st.markdown("""
         <div style="background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%); 
                     padding: 3rem; border-radius: 16px; text-align: center; 
                     color: white; margin: 0 0 2rem 0;">
-            <h2 style="margin: 0; font-size: 2rem;">🚚 Envío Gratis</h2>
-            <p style="margin: 0.5rem 0 0; font-size: 1.1rem;">En tu primera compra</p>
+            <h2 style="margin: 0; font-size: 2rem; color: white !important;">🚚 Envío Gratis</h2>
+            <p style="margin: 0.5rem 0 0; font-size: 1.1rem; color: white !important;">En tu primera compra</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -1015,7 +973,6 @@ def render_home_page():
         st.warning(T['loading'])
 
 def render_products_page():
-# ... (código existente sin cambios) ...
     st.markdown(f"# {T['page_products']}")
     
     render_sidebar()
@@ -1049,7 +1006,6 @@ def render_products_page():
         st.warning(T['loading'])
 
 def render_product_detail_page():
-# ... (código existente sin cambios) ...
     product_id = st.session_state.selected_product_id
     
     if not product_id:
@@ -1116,7 +1072,6 @@ def render_product_detail_page():
         st.error(str(e))
 
 def render_cart_page():
-# ... (código existente sin cambios) ...
     if not st.session_state.user:
         st.warning("Inicia sesión para ver tu carrito")
         navigate_to('auth')
@@ -1191,7 +1146,6 @@ def render_cart_page():
         st.error(str(e))
 
 def render_checkout_page():
-# ... (código existente sin cambios) ...
     if not st.session_state.user:
         navigate_to('auth')
         return
@@ -1231,7 +1185,6 @@ def render_checkout_page():
         pass
 
 def render_auth_page():
-# ... (código existente sin cambios) ...
     st.markdown(f"# {T['page_account']}")
     
     from components.auth import render_login_form, render_register_form
@@ -1244,7 +1197,6 @@ def render_auth_page():
         render_register_form()
 
 def render_account_page():
-# ... (código existente sin cambios) ...
     if not st.session_state.user:
         navigate_to('auth')
         return
@@ -1259,18 +1211,13 @@ def render_account_page():
     
     col1, col2 = st.columns(2)
     with col1:
-        # --- CORRECCIÓN ---
-        # Añadimos una 'key' única para evitar la colisión con el botón del header
         if st.button(f"📦 {T['user_orders']}", use_container_width=True, key="account_orders_btn"):
             navigate_to('orders')
     with col2:
-        # --- CORRECCIÓN ---
-        # Añadimos una 'key' única también a este botón para ser consistentes
         if st.button(f"🛒 {T['nav_cart']}", use_container_width=True, key="account_cart_btn"):
             navigate_to('cart')
 
 def render_orders_page():
-# ... (código existente sin cambios) ...
     if not st.session_state.user:
         navigate_to('auth')
         return
@@ -1303,13 +1250,11 @@ def render_orders_page():
         pass
 
 def render_about_page():
-# ... (código existente sin cambios) ...
     from components.about import render_about_content
     render_about_content()
 
 # --- FOOTER ---
 def render_footer():
-# ... (código existente sin cambios) ...
     footer_html = f"""
     <div class="sava-footer">
         <div class="footer-content">
@@ -1354,7 +1299,6 @@ def render_footer():
 
 # --- MAIN ---
 def main():
-# ... (código existente sin cambios) ...
     render_header()
     update_cart_count()
     
@@ -1392,7 +1336,6 @@ def main():
     render_footer()
 
 if __name__ == "__main__":
-# ... (código existente sin cambios) ...
     try:
         main()
     except Exception as e:
