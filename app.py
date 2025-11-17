@@ -1149,10 +1149,14 @@ def render_account_page():
     
     col1, col2 = st.columns(2)
     with col1:
-        if st.button(f"📦 {T['user_orders']}", use_container_width=True):
+        # --- CORRECCIÓN ---
+        # Añadimos una 'key' única para evitar la colisión con el botón del header
+        if st.button(f"📦 {T['user_orders']}", use_container_width=True, key="account_orders_btn"):
             navigate_to('orders')
     with col2:
-        if st.button(f"🛒 {T['nav_cart']}", use_container_width=True):
+        # --- CORRECCIÓN ---
+        # Añadimos una 'key' única también a este botón para ser consistentes
+        if st.button(f"🛒 {T['nav_cart']}", use_container_width=True, key="account_cart_btn"):
             navigate_to('cart')
 
 def render_orders_page():
