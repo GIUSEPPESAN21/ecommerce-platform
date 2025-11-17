@@ -166,25 +166,27 @@ st.markdown("""
             box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
         }
         
-        /* Navegación (Estilo ML) */
+        /* Navegación (Contenedor para st.columns) */
         .header-nav {
             display: flex;
             align-items: center;
             gap: var(--space-sm);
             flex-shrink: 0;
+            width: 100%; /* Ocupa el espacio de la columna padre */
         }
         
-        /* Botones de navegación */
+        /* Botones de navegación (ahora dentro de st.columns) */
         .header-nav .stButton > button {
             background: transparent;
             border: none;
             color: var(--gray-800); /* Texto oscuro sobre amarillo */
             font-size: 0.875rem; /* Más pequeño */
             font-weight: 400; /* Menos grueso */
-            padding: 0.5rem 0.75rem;
+            padding: 0.5rem 0.25rem; /* Menos padding horizontal */
             border-radius: var(--radius-md);
             transition: all 0.15s ease;
-            white-space: nowrap;
+            white-space: nowrap; /* Evitar que el texto se parta */
+            width: 100%; /* Ocupar columna */
         }
         
         .header-nav .stButton > button:hover {
@@ -199,7 +201,7 @@ st.markdown("""
         }
         
         .lang-selector .stSelectbox {
-            width: 70px;
+            width: 100%;
         }
         
         .lang-selector [data-baseweb="select"] {
@@ -208,7 +210,9 @@ st.markdown("""
             font-size: 0.875rem;
             font-weight: 400;
             color: var(--gray-800);
-            min-height: 36px;
+            min-height: 38px;
+            padding-left: 0.25rem;
+            padding-right: 0.25rem;
         }
         
         .lang-selector [data-baseweb="select"]:hover {
@@ -219,12 +223,13 @@ st.markdown("""
         /* Icono de carrito con badge */
         .cart-wrapper {
             position: relative;
+            width: 100%;
         }
         
         .cart-badge {
             position: absolute;
-            top: -6px;
-            right: -6px;
+            top: -2px;
+            right: 0px;
             background: var(--error);
             color: white;
             font-size: 0.75rem;
@@ -249,6 +254,7 @@ st.markdown("""
         /* Popover de usuario (Estilo ML) */
         [data-testid="stPopover"] {
             z-index: 1001;
+            width: 100%;
         }
         
         [data-testid="stPopover"] > button {
@@ -257,8 +263,12 @@ st.markdown("""
             font-size: 0.875rem;
             font-weight: 400;
             color: var(--gray-800);
-            padding: 0.5rem 0.75rem;
+            padding: 0.5rem 0.25rem;
             border-radius: var(--radius-md);
+            width: 100%; /* Ocupar columna */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         [data-testid="stPopover"] > button:hover {
@@ -585,35 +595,48 @@ st.markdown("""
         /* ========================================
            11. RESPONSIVE
         ======================================== */
-        @media (max-width: 768px) {
-            .header-content {
+        @media (max-width: 992px) {
+             .header-content {
                 flex-wrap: wrap;
                 padding: var(--space-sm) var(--space-md);
+                max-width: 100%;
             }
-            
+            .header-brand {
+                flex-grow: 1;
+            }
             .header-search {
                 order: 3;
                 width: 100%;
                 max-width: none;
                 margin-top: var(--space-sm);
             }
-            
+            .header-nav {
+                width: auto;
+                flex-grow: 1;
+                justify-content: flex-end;
+            }
+            .main .block-container {
+                padding-top: 160px; /* Más espacio para header en móvil */
+                border-radius: 0;
+                box-shadow: none;
+            }
+        }
+
+        @media (max-width: 768px) {
             .header-nav {
                 gap: var(--space-xs);
             }
             
             .header-nav .stButton > button {
-                padding: 0.5rem;
-                font-size: 0.875rem;
+                padding: 0.5rem 0.1rem;
+                font-size: 0.8rem; /* Aún más pequeño en móvil */
+            }
+             .lang-selector [data-baseweb="select"] {
+                font-size: 0.8rem;
             }
             
             h1 {
                 font-size: 1.875rem;
-            }
-            
-            .main .block-container {
-                padding-top: 160px; /* Más espacio para header en móvil */
-                border-radius: 0;
             }
         }
         
@@ -797,11 +820,13 @@ def render_header():
     st.markdown('<div class="sava-header">', unsafe_allow_html=True)
     st.markdown('<div class="header-content">', unsafe_allow_html=True)
     
+    # Columnas principales: [Logo, Búsqueda, Navegación]
     cols = st.columns([1.5, 4, 3])
     
     # Logo y marca
     with cols[0]:
         st.markdown('<div class="header-brand">', unsafe_allow_html=True)
+        # Usar st.columns para alinear logo y texto (el botón de SAVA)
         col_img, col_text = st.columns([1, 2])
         with col_img:
             st.image("https://github.com/GIUSEPPESAN21/LOGO-SAVA/blob/main/LOGO.jpg?raw=true", width=48)
@@ -825,63 +850,106 @@ def render_header():
             navigate_to('products')
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # Navegación
+    # Navegación (AHORA CON st.columns INTERNO)
     with cols[2]:
         st.markdown('<div class="header-nav">', unsafe_allow_html=True)
         
-        # Idioma
-        st.markdown('<div class="lang-selector">', unsafe_allow_html=True)
-        lang = st.selectbox(
-            "lang",
-            options=['ES', 'EN'],
-            index=0 if st.session_state.lang == 'ES' else 1,
-            key='lang_select',
-            label_visibility="collapsed"
-        )
-        if lang != st.session_state.lang:
-            st.session_state.lang = lang
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        # Categorías
-        if st.button(f"🗂️ {T['nav_categories']}", key="cat_btn"):
-            navigate_to('products')
-        
-        # About
-        if st.button(f"ℹ️ {T['nav_about']}", key="about_btn"):
-            navigate_to('about')
-        
-        # Usuario
         if st.session_state.user:
-            with st.popover(f"👤 {T['user_welcome']}, {st.session_state.user.get('display_name', 'User').split()[0]}"):
-                st.markdown(f"**{st.session_state.user.get('display_name')}**")
-                st.caption(st.session_state.user.get('email'))
-                st.divider()
-                if st.button(f"👤 {T['user_account']}", use_container_width=True):
-                    navigate_to('account')
-                if st.button(f"📦 {T['user_orders']}", use_container_width=True):
-                    navigate_to('orders')
-                if st.button(f"🚪 {T['user_logout']}", use_container_width=True):
-                    st.session_state.user = None
-                    st.session_state.cart_count = 0
-                    navigate_to('home')
+            # 5 items para usuario logueado
+            nav_cols = st.columns([1.2, 1.5, 1.5, 2.2, 1.2]) 
+            
+            with nav_cols[0]:
+                st.markdown('<div class="lang-selector">', unsafe_allow_html=True)
+                lang = st.selectbox(
+                    "lang",
+                    options=['ES', 'EN'],
+                    index=0 if st.session_state.lang == 'ES' else 1,
+                    key='lang_select',
+                    label_visibility="collapsed"
+                )
+                if lang != st.session_state.lang:
+                    st.session_state.lang = lang
+                    st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
+
+            with nav_cols[1]:
+                if st.button(f"🗂️ {T['nav_categories']}", key="cat_btn", use_container_width=True):
+                    navigate_to('products')
+            
+            with nav_cols[2]:
+                if st.button(f"ℹ️ {T['nav_about']}", key="about_btn", use_container_width=True):
+                    navigate_to('about')
+
+            with nav_cols[3]:
+                with st.popover(f"👤 {T['user_welcome']}, {st.session_state.user.get('display_name', 'User').split()[0]}", use_container_width=True):
+                    st.markdown(f"**{st.session_state.user.get('display_name')}**")
+                    st.caption(st.session_state.user.get('email'))
+                    st.divider()
+                    if st.button(f"👤 {T['user_account']}", use_container_width=True):
+                        navigate_to('account')
+                    if st.button(f"📦 {T['user_orders']}", use_container_width=True):
+                        navigate_to('orders')
+                    if st.button(f"🚪 {T['user_logout']}", use_container_width=True):
+                        st.session_state.user = None
+                        st.session_state.cart_count = 0
+                        navigate_to('home')
+            
+            with nav_cols[4]:
+                st.markdown('<div class="cart-wrapper">', unsafe_allow_html=True)
+                if st.button(f"🛒 {T['nav_cart']}", key="cart_btn", use_container_width=True):
+                    navigate_to('cart')
+                if st.session_state.cart_count > 0:
+                    st.markdown(
+                        f'<div class="cart-badge">{st.session_state.cart_count}</div>',
+                        unsafe_allow_html=True
+                    )
+                st.markdown('</div>', unsafe_allow_html=True)
+
         else:
-            if st.button(T['nav_signin'], key="signin_btn"):
-                navigate_to('auth')
-            if st.button(T['nav_signup'], key="signup_btn"):
-                st.session_state.auth_tab = 'register'
-                navigate_to('auth')
-        
-        # Carrito
-        st.markdown('<div class="cart-wrapper">', unsafe_allow_html=True)
-        if st.button(f"🛒 {T['nav_cart']}", key="cart_btn"):
-            navigate_to('cart')
-        if st.session_state.cart_count > 0:
-            st.markdown(
-                f'<div class="cart-badge">{st.session_state.cart_count}</div>',
-                unsafe_allow_html=True
-            )
-        st.markdown('</div>', unsafe_allow_html=True)
+            # 6 items para usuario no logueado
+            nav_cols = st.columns([1.2, 1.5, 1.5, 1.2, 1.5, 1.2]) 
+
+            with nav_cols[0]:
+                st.markdown('<div class="lang-selector">', unsafe_allow_html=True)
+                lang = st.selectbox(
+                    "lang",
+                    options=['ES', 'EN'],
+                    index=0 if st.session_state.lang == 'ES' else 1,
+                    key='lang_select',
+                    label_visibility="collapsed"
+                )
+                if lang != st.session_state.lang:
+                    st.session_state.lang = lang
+                    st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
+
+            with nav_cols[1]:
+                if st.button(f"🗂️ {T['nav_categories']}", key="cat_btn", use_container_width=True):
+                    navigate_to('products')
+
+            with nav_cols[2]:
+                if st.button(f"ℹ️ {T['nav_about']}", key="about_btn", use_container_width=True):
+                    navigate_to('about')
+
+            with nav_cols[3]:
+                if st.button(T['nav_signin'], key="signin_btn", use_container_width=True):
+                    navigate_to('auth')
+
+            with nav_cols[4]:
+                if st.button(T['nav_signup'], key="signup_btn", use_container_width=True):
+                    st.session_state.auth_tab = 'register'
+                    navigate_to('auth')
+            
+            with nav_cols[5]:
+                st.markdown('<div class="cart-wrapper">', unsafe_allow_html=True)
+                if st.button(f"🛒 {T['nav_cart']}", key="cart_btn", use_container_width=True):
+                    navigate_to('cart')
+                if st.session_state.cart_count > 0:
+                    st.markdown(
+                        f'<div class="cart-badge">{st.session_state.cart_count}</div>',
+                        unsafe_allow_html=True
+                    )
+                st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown('</div>', unsafe_allow_html=True)
     
@@ -889,6 +957,7 @@ def render_header():
 
 # --- SIDEBAR (solo productos) ---
 def render_sidebar():
+# ... (código existente sin cambios) ...
     with st.sidebar:
         st.title(f"🔍 {T['filter_title']}")
         st.divider()
@@ -917,7 +986,7 @@ def render_sidebar():
 
 # --- PÁGINAS ---
 def render_home_page():
-    # st.markdown(f"# {T['page_home_title']}")
+    # st.markdown(f"# {T['page_home_title']}") # Títulos opcionales, ML no los usa
     # st.markdown(f"### {T['page_home_subtitle']}")
     
     # Banner promocional
@@ -946,6 +1015,7 @@ def render_home_page():
         st.warning(T['loading'])
 
 def render_products_page():
+# ... (código existente sin cambios) ...
     st.markdown(f"# {T['page_products']}")
     
     render_sidebar()
@@ -979,6 +1049,7 @@ def render_products_page():
         st.warning(T['loading'])
 
 def render_product_detail_page():
+# ... (código existente sin cambios) ...
     product_id = st.session_state.selected_product_id
     
     if not product_id:
@@ -1045,6 +1116,7 @@ def render_product_detail_page():
         st.error(str(e))
 
 def render_cart_page():
+# ... (código existente sin cambios) ...
     if not st.session_state.user:
         st.warning("Inicia sesión para ver tu carrito")
         navigate_to('auth')
@@ -1119,6 +1191,7 @@ def render_cart_page():
         st.error(str(e))
 
 def render_checkout_page():
+# ... (código existente sin cambios) ...
     if not st.session_state.user:
         navigate_to('auth')
         return
@@ -1158,6 +1231,7 @@ def render_checkout_page():
         pass
 
 def render_auth_page():
+# ... (código existente sin cambios) ...
     st.markdown(f"# {T['page_account']}")
     
     from components.auth import render_login_form, render_register_form
@@ -1170,6 +1244,7 @@ def render_auth_page():
         render_register_form()
 
 def render_account_page():
+# ... (código existente sin cambios) ...
     if not st.session_state.user:
         navigate_to('auth')
         return
@@ -1195,6 +1270,7 @@ def render_account_page():
             navigate_to('cart')
 
 def render_orders_page():
+# ... (código existente sin cambios) ...
     if not st.session_state.user:
         navigate_to('auth')
         return
@@ -1227,11 +1303,13 @@ def render_orders_page():
         pass
 
 def render_about_page():
+# ... (código existente sin cambios) ...
     from components.about import render_about_content
     render_about_content()
 
 # --- FOOTER ---
 def render_footer():
+# ... (código existente sin cambios) ...
     footer_html = f"""
     <div class="sava-footer">
         <div class="footer-content">
@@ -1276,6 +1354,7 @@ def render_footer():
 
 # --- MAIN ---
 def main():
+# ... (código existente sin cambios) ...
     render_header()
     update_cart_count()
     
@@ -1313,6 +1392,7 @@ def main():
     render_footer()
 
 if __name__ == "__main__":
+# ... (código existente sin cambios) ...
     try:
         main()
     except Exception as e:
