@@ -45,9 +45,9 @@ st.markdown("""
             left: 0;
             right: 0;
             z-index: 999;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Paleta SAVA (del archivo guía) */
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Sombra más sutil */
+            background: #FFFFFF; /* HEADER BLANCO LIMPIO */
+            padding: 0.75rem 2rem; /* Un poco más delgado */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Sombra sutil */
             border-bottom: 1px solid #E0E0E0;
         }
         
@@ -68,13 +68,13 @@ st.markdown("""
             background: none;
             border: none;
             padding: 0;
-            color: #FFFFFF; /* Texto blanco en header */
+            color: #222222; /* Texto oscuro */
             font-size: 1.1rem; /* Ajustado */
             font-weight: 700;
             transition: color 0.2s;
         }
         .header-logo-container .stButton>button:hover {
-            color: #F0F0F0; /* Aclarado leve */
+            color: #0D9488; /* Acento SAVA (Teal) */
             transform: none;
             box-shadow: none;
         }
@@ -98,25 +98,26 @@ st.markdown("""
         
         .header-nav-links {
             display: flex;
-            gap: 1.5rem;
+            gap: 0.5rem; /* Espaciado consistente */
             align-items: center;
         }
         
         .header-nav-links .stButton>button {
             background: none;
             border: none;
-            color: #FFFFFF; /* Texto blanco en header */
+            color: #333333; /* Texto oscuro */
             font-weight: 400;
-            padding: 0.5rem;
+            padding: 0.5rem 0.75rem;
             transition: all 0.2s;
             border-radius: 6px;
+            width: auto !important; /* !! ARREGLO CLAVE: TAMAÑO DE BOTÓN CONSISTENTE */
         }
         
         .header-nav-links .stButton>button:hover {
-            color: #FFFFFF;
-            background-color: rgba(255, 255, 255, 0.1); /* Efecto hover sutil */
-            transform: translateY(-2px); /* Animación de botón */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Animación de botón */
+            color: #0D9488; /* Acento SAVA (Teal) */
+            background-color: rgba(13, 148, 136, 0.05); /* Fondo hover muy sutil */
+            transform: none; /* Sin animación de levantamiento en header */
+            box-shadow: none;
         }
 
         /* MEJORA: Estilo para el SelectBox de Idioma */
@@ -125,18 +126,36 @@ st.markdown("""
         }
         .header-nav-links .stSelectbox div[data-baseweb="select"] {
             background-color: transparent;
-            border: 1px solid #FFFFFF; /* Borde blanco */
+            border: 1px solid #AAAAAA; /* Borde oscuro */
             border-radius: 6px;
             font-size: 0.9rem;
             font-weight: 600;
-            color: #FFFFFF; /* Texto blanco */
+            color: #333333; /* Texto oscuro */
         }
         .header-nav-links .stSelectbox div[data-baseweb="select"] > div {
             padding: 2px 6px; /* Más pequeño */
         }
         /* MEJORA: Color del icono del selectbox */
         .header-nav-links .stSelectbox svg {
-            fill: #FFFFFF;
+            fill: #333333;
+        }
+        
+        /* MEJORA: Arreglo para Popover y Carrito para que tengan tamaño automático */
+        div[data-testid="stPopover"] > button,
+        .cart-button-wrapper .stButton>button {
+            width: auto !important;
+            padding: 0.5rem 0.75rem;
+            background: none;
+            border: none;
+            color: #333333;
+            font-weight: 400;
+            transition: all 0.2s;
+            border-radius: 6px;
+        }
+        div[data-testid="stPopover"] > button:hover,
+        .cart-button-wrapper .stButton>button:hover {
+            color: #0D9488;
+            background-color: rgba(13, 148, 136, 0.05);
         }
 
         .cart-button-wrapper {
@@ -198,11 +217,11 @@ st.markdown("""
         
         /* Botón Primario (Comprar, Checkout) */
         .stButton>button[kind="primary"] {
-            background-color: #667eea; /* Color SAVA */
+            background-color: #0D9488; /* Acento SAVA (Teal) */
             color: white;
         }
         .stButton>button[kind="primary"]:hover {
-            background-color: #5a6ec0;
+            background-color: #0F766E; /* Teal más oscuro */
             transform: translateY(-2px); /* Animación de botón */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Animación de botón */
         }
@@ -220,11 +239,12 @@ st.markdown("""
         
         /* --- 5. Footer --- */
         .app-footer {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); /* Paleta SAVA (del archivo guía) */
-            color: #FFFFFF;
+            background: #FFFFFF; /* Footer blanco */
+            color: #333333; /* Texto oscuro */
             padding: 3rem 2rem;
             margin-top: 4rem;
             border-radius: 15px 15px 0 0;
+            border-top: 1px solid #E0E0E0;
         }
         .footer-grid {
             display: grid;
@@ -237,7 +257,7 @@ st.markdown("""
             font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 1rem;
-            color: #667eea; /* Acento SAVA */
+            color: #0D9488; /* Acento SAVA (Teal) */
         }
         .footer-col ul {
             list-style: none;
@@ -247,12 +267,12 @@ st.markdown("""
             margin-bottom: 0.75rem;
         }
         .footer-col a, .footer-col span {
-            color: #F5F5F5;
+            color: #555555; /* Texto de enlace más oscuro */
             text-decoration: none;
             transition: color 0.2s;
         }
         .footer-col a:hover {
-            color: #667eea; /* Acento SAVA */
+            color: #0D9488; /* Acento SAVA (Teal) */
             text-decoration: underline;
         }
         .footer-copyright {
@@ -274,9 +294,9 @@ TEXTS = {
     'ES': {
         'search_placeholder': "Buscar productos, marcas y más...",
         'nav_categories': "🗂️ Categorías",
-        'nav_deals': "🔥 Ofertas",
-        'nav_history': "📜 Historial",
-        'nav_sell': "💰 Vender",
+        'nav_deals': "🔥 Ofertas", # Se mantiene en dicc, pero no se usa en header
+        'nav_history': "📜 Historial", # Se mantiene en dicc, pero no se usa en header
+        'nav_sell': "💰 Vender", # Se mantiene en dicc, pero no se usa en header
         'user_welcome': "Bienvenido",
         'user_account': "👤 Mi Cuenta",
         'user_orders': "📦 Mis Compras",
@@ -328,9 +348,9 @@ TEXTS = {
     'EN': {
         'search_placeholder': "Search products, brands, and more...",
         'nav_categories': "🗂️ Categories",
-        'nav_deals': "🔥 Deals",
-        'nav_history': "📜 History",
-        'nav_sell': "💰 Sell",
+        'nav_deals': "🔥 Deals", # Kept in dict, but not used in header
+        'nav_history': "📜 History", # Kept in dict, but not used in header
+        'nav_sell': "💰 Sell", # Kept in dict, but not used in header
         'user_welcome': "Welcome",
         'user_account': "👤 My Account",
         'user_orders': "📦 My Purchases",
@@ -432,15 +452,15 @@ def render_header():
     st.markdown('<div class="app-header">', unsafe_allow_html=True)
     
     with st.container():
-        # --- 1. Barra Principal ---
-        cols = st.columns([2, 5, 3]) # Logo, Búsqueda, Acciones
+        # --- 1. Barra Principal (UNA SOLA FILA) ---
+        cols = st.columns([2, 3, 4]) # Logo, Búsqueda, Acciones
         
         with cols[0]:
             # MEJORA: Wrapper para alinear logo y texto/botón
             st.markdown('<div class="header-logo-container">', unsafe_allow_html=True)
             st.image(
                 "https://github.com/GIUSEPPESAN21/LOGO-SAVA/blob/main/LOGO.jpg?raw=true", 
-                width=120,
+                width=100, # Logo un poco más pequeño
             )
             if st.session_state.page != 'home':
                 # El CSS se aplicará a este botón
@@ -464,90 +484,65 @@ def render_header():
         
         with cols[2]:
             # Acciones de usuario y carrito
+            # !! ARREGLO CLAVE: No usar st.columns aquí
             st.markdown('<div class="header-nav-links">', unsafe_allow_html=True)
-            # Columnas flexibles para acciones
-            nav_cols = st.columns([1, 1.5, 1.5, 1]) 
             
-            with nav_cols[0]:
-                # Selector de Idioma
-                def on_lang_change():
-                    st.session_state.lang = st.session_state.lang_selector
-                
-                # El CSS se aplicará a este selectbox
-                st.selectbox(
-                    label="Language",
-                    options=['ES', 'EN'],
-                    index=0 if st.session_state.lang == 'ES' else 1,
-                    key='lang_selector',
-                    on_change=on_lang_change,
-                    label_visibility="collapsed"
-                )
-
-            with nav_cols[1]:
-                # Usuario (Login o Popover de Cuenta)
-                if st.session_state.user:
-                    with st.popover(f"👤 {T['user_welcome']}, {st.session_state.user.get('display_name', 'User')}"):
-                        st.markdown(f"**{st.session_state.user.get('display_name', 'User')}**")
-                        st.markdown(f"<small>{st.session_state.user.get('email')}</small>", unsafe_allow_html=True)
-                        st.divider()
-                        if st.button(T['user_account'], use_container_width=True):
-                            navigate_to('account')
-                        if st.button(T['user_orders'], use_container_width=True):
-                            navigate_to('orders')
-                        if st.button(T['user_logout'], use_container_width=True):
-                            st.session_state.user = None
-                            st.session_state.cart_count = 0
-                            if 'id_token' in st.session_state: del st.session_state.id_token
-                            if 'refresh_token' in st.session_state: del st.session_state.refresh_token
-                            navigate_to('home')
-                else:
-                    if st.button(T['nav_signin'], use_container_width=True):
-                        navigate_to('auth')
-
-            with nav_cols[2]:
-                if not st.session_state.user:
-                    if st.button(T['nav_signup'], use_container_width=True):
-                        st.session_state.auth_tab = 'register'
-                        navigate_to('auth')
-
-            with nav_cols[3]:
-                # Carrito
-                st.markdown('<div class="cart-button-wrapper">', unsafe_allow_html=True)
-                if st.button(f"🛒 {T['nav_cart']}", use_container_width=True):
-                    navigate_to('cart')
-                if st.session_state.cart_count > 0:
-                    st.markdown(f'<div class="cart-badge">{st.session_state.cart_count}</div>', unsafe_allow_html=True)
-                st.markdown('</div>', unsafe_allow_html=True)
-
-            st.markdown('</div>', unsafe_allow_html=True)
+            # Selector de Idioma
+            def on_lang_change():
+                st.session_state.lang = st.session_state.lang_selector
             
-        # --- 2. Barra de Navegación (Inferior) ---
-        st.markdown('<div style="margin-top: 1rem;">', unsafe_allow_html=True)
-        nav_cols_bottom = st.columns(6)
-        
-        with nav_cols_bottom[0]:
+            st.selectbox(
+                label="Language",
+                options=['ES', 'EN'],
+                index=0 if st.session_state.lang == 'ES' else 1,
+                key='lang_selector',
+                on_change=on_lang_change,
+                label_visibility="collapsed"
+            )
+
+            # Botones funcionales
             if st.button(T['nav_categories'], use_container_width=True):
                 st.session_state.selected_category = None # Reset
                 navigate_to('products')
-        with nav_cols_bottom[1]:
-            if st.button(T['nav_deals'], use_container_width=True):
-                # Lógica de ofertas (futuro)
-                st.info("Deals page coming soon!")
-                navigate_to('products')
-        with nav_cols_bottom[2]:
-            if st.button(T['nav_history'], use_container_width=True):
-                # Lógica de historial (futuro)
-                st.info("History page coming soon!")
-                navigate_to('account')
-        with nav_cols_bottom[3]:
-            if st.button(T['nav_sell'], use_container_width=True):
-                # Lógica de vender (futuro)
-                st.info("Sell page coming soon!")
-        with nav_cols_bottom[4]:
-             if st.button(T['page_about'], use_container_width=True):
+            
+            if st.button(T['page_about'], use_container_width=True):
                 navigate_to('about')
 
-        st.markdown('</div>', unsafe_allow_html=True)
+            # Usuario (Login o Popover de Cuenta)
+            if st.session_state.user:
+                with st.popover(f"👤 {T['user_welcome']}, {st.session_state.user.get('display_name', 'User')}"):
+                    st.markdown(f"**{st.session_state.user.get('display_name', 'User')}**")
+                    st.markdown(f"<small>{st.session_state.user.get('email')}</small>", unsafe_allow_html=True)
+                    st.divider()
+                    if st.button(T['user_account'], use_container_width=True):
+                        navigate_to('account')
+                    if st.button(T['user_orders'], use_container_width=True):
+                        navigate_to('orders')
+                    if st.button(T['user_logout'], use_container_width=True):
+                        st.session_state.user = None
+                        st.session_state.cart_count = 0
+                        if 'id_token' in st.session_state: del st.session_state.id_token
+                        if 'refresh_token' in st.session_state: del st.session_state.refresh_token
+                        navigate_to('home')
+            else:
+                if st.button(T['nav_signin'], use_container_width=True):
+                    navigate_to('auth')
+                if st.button(T['nav_signup'], use_container_width=True):
+                    st.session_state.auth_tab = 'register'
+                    navigate_to('auth')
+
+            # Carrito
+            st.markdown('<div class="cart-button-wrapper">', unsafe_allow_html=True)
+            if st.button(f"{T['nav_cart']}", use_container_width=True):
+                navigate_to('cart')
+            if st.session_state.cart_count > 0:
+                st.markdown(f'<div class="cart-badge">{st.session_state.cart_count}</div>', unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+            st.markdown('</div>', unsafe_allow_html=True)
+            
+        # --- ELIMINADO: Barra de Navegación (Inferior) ---
+        # Los botones no funcionales se han quitado para limpiar la UI.
 
     st.markdown('</div>', unsafe_allow_html=True)
 
