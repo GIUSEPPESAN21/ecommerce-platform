@@ -3,20 +3,17 @@ E-Commerce Platform - Main Application
 A professional e-commerce platform built with Streamlit, Firebase, and Python.
 Inspired by MercadoLibre, Amazon, and Temu.
 
-MEJORA DE UI:
-- Refactorizado completo del Header.
-- Soporte bilingüe (ES/EN).
-- CSS actualizado a la nueva paleta de diseño.
-- Lógica de layout modificada (sidebar solo en productos).
-- Página de carrito rediseñada con 2 columnas.
-- Footer profesional de 4 columnas.
+MEJORA DE UI (v2):
+- Refinamientos en CSS para el header.
+- Estilo mejorado para el selector de idioma.
+- Animación de entrada suave para el contenido.
+- Ajuste en el botón/logo de SAVA para mejor alineación.
 """
 import streamlit as st
 import sys
 from typing import Optional, Dict, Any
 
 # --- Configuración de Página ---
-# Se mantiene 'wide' y 'collapsed' como en la propuesta
 st.set_page_config(
     page_title="SAVA E-Commerce",
     page_icon="https" + "://github.com/GIUSEPPESAN21/LOGO-SAVA/blob/main/LOGO.jpg?raw=true", # Icono de SAVA
@@ -25,7 +22,7 @@ st.set_page_config(
 )
 
 # --- INYECCIÓN DE CSS MEJORADO ---
-# Basado en la Propuesta de Interfaz (modelo_mercadolibre.md)
+# Basado en la Propuesta de Interfaz y refinamientos UX/UI
 st.markdown("""
     <style>
         /* --- 1. Globales y Tipografía (Inter) --- */
@@ -50,7 +47,7 @@ st.markdown("""
             z-index: 999;
             background-color: #FFF159; /* Acento MercadoLibre */
             padding: 1rem 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Sombra más sutil */
             border-bottom: 1px solid #E0E0E0;
         }
         
@@ -60,8 +57,26 @@ st.markdown("""
             align-items: center;
         }
         
-        .header-logo {
-            width: 120px;
+        /* MEJORA: Wrapper para el logo y botón de home */
+        .header-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        /* MEJORA: Estilo para el botón de texto "SAVA E-Commerce" */
+        .header-logo-container .stButton>button {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #333333;
+            font-size: 1.1rem; /* Ajustado */
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+        .header-logo-container .stButton>button:hover {
+            color: #667eea; /* Color SAVA */
+            transform: none;
+            box-shadow: none;
         }
 
         .header-search {
@@ -74,6 +89,11 @@ st.markdown("""
             border: 1px solid #E0E0E0;
             padding-left: 1.5rem;
             background-color: white;
+            transition: all 0.2s ease;
+        }
+        .header-search .stTextInput input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
         }
         
         .header-nav-links {
@@ -88,13 +108,30 @@ st.markdown("""
             color: #333333;
             font-weight: 400;
             padding: 0.5rem;
-            transition: color 0.2s;
+            transition: all 0.2s;
+            border-radius: 6px;
         }
         
         .header-nav-links .stButton>button:hover {
-            color: #667eea; /* Color SAVA */
+            color: #333333;
+            background-color: rgba(0, 0, 0, 0.05);
             transform: none;
             box-shadow: none;
+        }
+
+        /* MEJORA: Estilo para el SelectBox de Idioma */
+        .header-nav-links .stSelectbox {
+            width: 75px; /* Ancho fijo */
+        }
+        .header-nav-links .stSelectbox div[data-baseweb="select"] {
+            background-color: transparent;
+            border: 1px solid #AAAAAA;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .header-nav-links .stSelectbox div[data-baseweb="select"] > div {
+            padding: 2px 6px; /* Más pequeño */
         }
 
         .cart-button-wrapper {
@@ -117,13 +154,19 @@ st.markdown("""
             justify-content: center;
         }
         
-        /* Contenedor principal con padding para el header fijo */
+        /* Contenedor principal con padding y animación */
         .main .block-container {
             padding-top: 100px; /* Ajustar según altura del header */
+            /* MEJORA: Animación de entrada suave */
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* --- 3. Tarjeta de Producto (Product Card) --- */
-        /* Estilos aplicados a la estructura de components/product_card.py */
         div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] > div[data-testid="stContainer"] {
             border: 1px solid #E0E0E0;
             border-radius: 8px;
@@ -131,6 +174,7 @@ st.markdown("""
             background: white;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             transition: box-shadow 0.3s ease, transform 0.3s ease;
+            height: 100%; /* MEJORA: Asegurar altura consistente */
         }
         
         div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] > div[data-testid="stContainer"]:hover {
@@ -161,6 +205,9 @@ st.markdown("""
             background-color: #E0E0E0;
             color: #333333;
         }
+        .stButton>button[kind="secondary"]:hover {
+            background-color: #d5d5d5;
+        }
         
         /* --- 5. Footer --- */
         .app-footer {
@@ -190,7 +237,7 @@ st.markdown("""
         .footer-col li {
             margin-bottom: 0.75rem;
         }
-        .footer-col a {
+        .footer-col a, .footer-col span {
             color: #F5F5F5;
             text-decoration: none;
             transition: color 0.2s;
@@ -342,7 +389,6 @@ def init_session_state():
         st.session_state.selected_product_id = None
     if 'auth_tab' not in st.session_state:
         st.session_state.auth_tab = 'login'
-    # MEJORA: Añadir idioma al session state
     if 'lang' not in st.session_state:
         st.session_state.lang = 'ES'
 
@@ -378,16 +424,20 @@ def render_header():
     
     with st.container():
         # --- 1. Barra Principal ---
-        cols = st.columns([1.5, 5, 3]) # Logo, Búsqueda, Acciones
+        cols = st.columns([2, 5, 3]) # Logo, Búsqueda, Acciones
         
         with cols[0]:
+            # MEJORA: Wrapper para alinear logo y texto/botón
+            st.markdown('<div class="header-logo-container">', unsafe_allow_html=True)
             st.image(
                 "https://github.com/GIUSEPPESAN21/LOGO-SAVA/blob/main/LOGO.jpg?raw=true", 
                 width=120,
             )
             if st.session_state.page != 'home':
+                # El CSS se aplicará a este botón
                 if st.button("SAVA E-Commerce", use_container_width=False):
                      navigate_to('home')
+            st.markdown('</div>', unsafe_allow_html=True)
         
         with cols[1]:
             # Barra de búsqueda central
@@ -406,13 +456,15 @@ def render_header():
         with cols[2]:
             # Acciones de usuario y carrito
             st.markdown('<div class="header-nav-links">', unsafe_allow_html=True)
-            nav_cols = st.columns([1, 1, 1, 1]) # Botones de acciones
+            # Columnas flexibles para acciones
+            nav_cols = st.columns([1, 1.5, 1.5, 1]) 
             
             with nav_cols[0]:
                 # Selector de Idioma
                 def on_lang_change():
                     st.session_state.lang = st.session_state.lang_selector
                 
+                # El CSS se aplicará a este selectbox
                 st.selectbox(
                     label="Language",
                     options=['ES', 'EN'],
@@ -496,7 +548,6 @@ def render_sidebar():
     """
     Render sidebar with filters.
     MEJORA: Esta función ahora solo debe ser llamada en `products_page`.
-    Se ha eliminado la navegación y la info de usuario (movida al header).
     """
     with st.sidebar:
         st.title(T['filter_title'])
@@ -542,7 +593,7 @@ def render_home_page():
     st.title(T['page_home_title'])
     st.markdown(T['page_home_subtitle'])
     
-    # MEJORA: Añadir banner hero (placeholder)
+    # MEJORA: Añadir banner hero
     st.image(
         "https://placehold.co/1200x300/667eea/FFFFFF?text=ENVÍO+GRATIS+EN+TU+PRIMERA+COMPRA",
         use_container_width=True
@@ -671,7 +722,6 @@ def render_product_detail_page():
                 price = product.get('price', 0)
                 st.markdown(f"## {format_currency(price)}")
                 
-                # MEJORA: Info de envío (crítico)
                 st.markdown(f"🚚 **{T['cart_shipping']}**: {format_currency(5.99)} - _Llega mañana_")
                 
                 stock = product.get('stock', 0)
@@ -736,8 +786,6 @@ def render_cart_page():
     try:
         from services.firebase_service import FirebaseService
         from utils.formatters import format_currency, calculate_total
-        # Importar el componente original para re-usar su lógica interna
-        from components.cart_summary import render_cart_summary 
         
         firebase = FirebaseService()
         cart_items = firebase.get_user_cart(st.session_state.user['uid'])
@@ -756,7 +804,6 @@ def render_cart_page():
             st.subheader(T['cart_item_list'])
             st.markdown('<div style="background: white; padding: 1rem; border-radius: 8px;">', unsafe_allow_html=True)
             
-            # Re-implementar la lógica de lista de items (ya que no puedo editar cart_summary.py)
             def handle_quantity_change(user_id: str, product_id: str, new_quantity_key: str):
                 new_quantity = st.session_state.get(new_quantity_key)
                 if new_quantity is None: return
@@ -846,7 +893,6 @@ def render_checkout_page():
             navigate_to('cart')
             return
         
-        # MEJORA: Dividir checkout y resumen
         col_form, col_summary = st.columns([1.5, 1])
         
         with col_form:
@@ -889,7 +935,6 @@ def render_auth_page():
     
     from components.auth import render_login_form, render_register_form
     
-    # MEJORA: Usar st.session_state.auth_tab para controlar la pestaña
     tab_titles = [T['nav_signin'], T['nav_signup']]
     
     if st.session_state.auth_tab == 'register':
@@ -951,7 +996,6 @@ def render_orders_page():
         
         if orders:
             for order in orders:
-                # MEJORA: Usar st.container con borde
                 with st.container():
                     st.markdown('<div style="background: white; padding: 1.5rem; border-radius: 8px; border: 1px solid #E0E0E0; margin-bottom: 1rem;">', unsafe_allow_html=True)
                     col1, col2, col3 = st.columns([2, 1, 1])
